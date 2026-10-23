@@ -1,0 +1,560 @@
+{
+  "app": {
+    "name": "VR Drawing Analysis",
+    "tagline": "Art therapy data analysis"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "dashboard": "Dashboard",
+    "sessions": "Sessions",
+    "participants": "Participants",
+    "compare": "Compare",
+    "reports": "Reports",
+    "roadmap": "Roadmap",
+    "myRecords": "My records"
+  },
+  "mode": {
+    "demo": "Demo data (no server)",
+    "live": "Live server: {{url}}"
+  },
+  "roles": {
+    "psychologist": "Psychologist",
+    "player": "Player"
+  },
+  "common": {
+    "loading": "Loading…",
+    "empty": "Nothing to show yet.",
+    "retry": "Try again",
+    "none": "None",
+    "notAvailable": "n/a",
+    "viewAll": "View all",
+    "pagination": "Pagination",
+    "pageOf": "Page {{page}} of {{count}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "network": "The server at {{url}} cannot be reached. Is it running, and does it allow this web address (CORS)?",
+    "http": "The server answered with an error (HTTP {{status}}).",
+    "unknown": "An unexpected error happened."
+  },
+  "notImplemented": {
+    "title": "Not implemented yet",
+    "body": "{{feature}} needs the server-side analysis module, which is not built yet.",
+    "hint": "Choose “Demo data” on the login page to preview how this will look.",
+    "features": {
+      "overTime": "The drawings-over-time chart",
+      "recentDrawings": "The list of recent drawings",
+      "thumbnails": "Drawing thumbnails",
+      "metrics": "Drawing metrics",
+      "sessionStats": "Session statistics",
+      "reports": "Stored reports",
+      "reportGeneration": "Report generation"
+    }
+  },
+  "planned": {
+    "title": "Planned features"
+  },
+  "status": {
+    "active": "Active",
+    "open": "Open",
+    "closed": "Closed"
+  },
+  "auth": {
+    "intro": "Analysis of the drawings made in the VR art therapy game.",
+    "expired": "Your session expired. Please log in again.",
+    "dataSource": "Data source",
+    "mode": {
+      "demo": "Demo data",
+      "live": "Live server"
+    },
+    "demoHint": "Generated sample sessions and drawings. No server is needed.",
+    "demoPsychologist": "Enter as psychologist",
+    "demoPlayer": "Enter as player",
+    "serverUrl": "Server URL",
+    "username": "Username",
+    "password": "Password",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "gameTypes": {
+    "0": "Inner child",
+    "1": "Word forest",
+    "2": "Beach",
+    "3": "Room",
+    "4": "Bilateral drawing",
+    "5": "Safe place",
+    "unknown": "Unknown ({{id}})"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "An overview of the sessions and the drawings made in them.",
+    "sessions": "Sessions",
+    "sessionsHint": "{{open}} open, {{closed}} closed",
+    "drawings": "Drawings",
+    "participants": "Participants",
+    "activeSession": "Active session",
+    "since": "Since {{date}}",
+    "byGameType": "Drawings per game type",
+    "overTime": "Drawings over time",
+    "recentSessions": "Recent sessions",
+    "recentDrawings": "Recent drawings",
+    "drawingsCount_one": "{{count}} drawing",
+    "drawingsCount_other": "{{count}} drawings"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "subtitle": "All sessions, with the number of drawings and participants.",
+    "search": "Search",
+    "status": "Status",
+    "allStatuses": "All",
+    "gameType": "Game type",
+    "allGameTypes": "All",
+    "from": "From",
+    "to": "To",
+    "sort": "Sort by",
+    "sorts": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "name": "Name",
+      "drawings": "Most drawings"
+    },
+    "noMatch": "No session matches the filters.",
+    "noMatchHint": "Change or clear the filters to see more.",
+    "multiplayer": "Multiplayer",
+    "until": "until {{date}}",
+    "columns": {
+      "name": "Session",
+      "period": "Started",
+      "status": "Status",
+      "drawings": "Drawings",
+      "participants": "Participants"
+    }
+  },
+  "sessionDetail": {
+    "started": "Started",
+    "ended": "Ended",
+    "figures": "Figures in the scene",
+    "boy": "Boy",
+    "girl": "Girl",
+    "noDrawings": "Nobody has drawn in this session yet.",
+    "participants": "Participants",
+    "participantsHint": "Everyone who has at least one drawing in this session.",
+    "statistics": "Statistics",
+    "statisticsHint": "Distribution of every metric over the drawings of this session.",
+    "gallery": "Drawings ({{count}})",
+    "filterParticipant": "Participant",
+    "all": "All",
+    "noMatch": "No drawing matches the filters."
+  },
+  "statistics": {
+    "range": "Range",
+    "rangeLabel": "Range of {{metric}} from the minimum to the maximum, the dark tick marks the median",
+    "perParticipant": "Per participant (mean over their drawings)"
+  },
+  "participants": {
+    "title": "Participants",
+    "subtitle": "The players who can draw in the game.",
+    "name": "Name",
+    "age": "Age",
+    "gender": "Gender",
+    "dominantHand": "Dominant hand"
+  },
+  "gallery": {
+    "noThumbnail": "Thumbnail not available yet"
+  },
+  "drawing": {
+    "untitled": "Untitled drawing",
+    "info": "Drawing info",
+    "participant": "Participant",
+    "gameType": "Game type",
+    "date": "Date",
+    "strokes": "Strokes",
+    "strokesValue": "{{drawn}} drawn, {{erased}} erased",
+    "schema": "Data version",
+    "legacy": "1 (legacy)",
+    "appVersion": "Game version",
+    "device": "Device",
+    "tracking": "Body tracking",
+    "trackingThinned": "Every {{n}}th sample kept",
+    "multiplayer": "{{count}} authors"
+  },
+  "viewer": {
+    "title": "3D view",
+    "shown": "{{shown}} of {{total}} strokes shown",
+    "label": "Interactive 3D view of the drawing",
+    "unsupported": "The 3D view needs WebGL, which is not available in this browser.",
+    "hint": "Drag to rotate, right-drag to move, scroll to zoom, click a stroke to select it",
+    "background": "Dark background",
+    "views": {
+      "iso": "Reset",
+      "front": "Front",
+      "top": "Top",
+      "side": "Side"
+    },
+    "hand": "Hand",
+    "hands": {
+      "both": "Both",
+      "left": "Left",
+      "right": "Right"
+    },
+    "thickness": "Line thickness",
+    "showErased": "Show erased strokes ({{count}})",
+    "authors": "Authors",
+    "selected": "Selected stroke",
+    "stroke": {
+      "author": "Author",
+      "hand": "Hand",
+      "length": "Length",
+      "points": "Points",
+      "status": "Status"
+    },
+    "strokeList": "Stroke list ({{count}})",
+    "drawn": "Drawn",
+    "erased": "Erased"
+  },
+  "analysis": {
+    "title": "Analysis",
+    "subtitle": "Descriptive measures of the drawing. They support your judgement, they are not a diagnosis.",
+    "flags": "Data quality",
+    "flag": "Note",
+    "noFlags": "No data quality issues found.",
+    "palette": "Colours",
+    "paletteLabel": "Share of each colour in the ink of the drawing",
+    "version": "Analyzer {{version}}, {{time}}"
+  },
+  "flags": {
+    "legacySchema": "Saved by an older version of the game (data version 1): some data is missing.",
+    "thinnedTracking": "The body tracking was thinned out to fit the storage limit, so tracking-based results are approximate.",
+    "fewStrokes": "Very few strokes: the statistics are hardly meaningful.",
+    "allErased": "All strokes were erased: nothing is left to analyse.",
+    "missingFigurePosition": "The position of the figure is missing, so the distance to the figure cannot be computed.",
+    "missingTimeData": "No time information: the time and speed results are unavailable."
+  },
+  "metricGroups": {
+    "counts": "Counts",
+    "length": "Length",
+    "time": "Time",
+    "motion": "Motion",
+    "space": "Space",
+    "handUse": "Hand use",
+    "colour": "Colour",
+    "behaviour": "Behaviour"
+  },
+  "metricReasons": {
+    "noStrokes": "No drawn strokes.",
+    "noTimeData": "The drawing has no usable time information.",
+    "noPressure": "Saved before the trigger pressure was recorded.",
+    "noFigurePosition": "The figure position is not stored with this drawing yet.",
+    "noChromaticInk": "Only grey, black or white ink was used."
+  },
+  "metrics": {
+    "strokesDrawn": {
+      "name": "Strokes drawn",
+      "definition": "Number of strokes that are still part of the drawing.",
+      "note": "A stroke is one continuous line, from pressing to releasing the trigger."
+    },
+    "strokesErased": {
+      "name": "Strokes erased",
+      "definition": "Number of strokes that were drawn and then erased.",
+      "note": "Erased strokes stay in the data. They are analysed as behaviour, not as part of the drawing."
+    },
+    "pointCount": {
+      "name": "Points",
+      "definition": "Number of sampled points of the drawn strokes.",
+      "note": "Depends on the drawing speed and the sampling rate, so it says little about detail by itself."
+    },
+    "totalLength": {
+      "name": "Total length",
+      "definition": "Summed length of all drawn strokes, in metres of the game world.",
+      "note": "It reflects how much was drawn, more is not better."
+    },
+    "meanStrokeLength": {
+      "name": "Mean stroke length",
+      "definition": "Total length divided by the number of drawn strokes.",
+      "note": "Short strokes can mean a careful, detailed way of drawing or hesitation. Look at the drawing as well."
+    },
+    "boundingVolume": {
+      "name": "Used space",
+      "definition": "Volume of the box that contains all drawn strokes.",
+      "note": "Shows how much space was used. One stray stroke makes the box larger (outlier trimming is planned)."
+    },
+    "heightRange": {
+      "name": "Height range",
+      "definition": "Difference between the highest and the lowest point of the drawing.",
+      "note": "Depends on how far the participant can reach."
+    },
+    "figureDistance": {
+      "name": "Distance to the figure",
+      "definition": "Mean distance of the drawn points from the figure shown in the scene.",
+      "note": "Needs the figure position, which is not stored with the drawings yet."
+    },
+    "drawingSpan": {
+      "name": "Time span",
+      "definition": "Time from the start of the first stroke to the end of the last stroke.",
+      "note": "Includes the pauses between strokes."
+    },
+    "activeTime": {
+      "name": "Active drawing time",
+      "definition": "Summed time the participant was drawing strokes.",
+      "note": "The pauses between strokes are not included."
+    },
+    "meanSpeed": {
+      "name": "Mean speed",
+      "definition": "Total length divided by the active drawing time.",
+      "note": "Slow can mean careful or hesitant, fast can mean confident or hurried. It only describes."
+    },
+    "directionalChange": {
+      "name": "Directional change",
+      "definition": "Mean turning angle between consecutive segments of the strokes, from 0 (straight) to 1 (turning back).",
+      "note": "Natural curves count too. High values come from many changes of direction, for example tremor, scribbling or tight curves. The definition is still under review."
+    },
+    "meanPressure": {
+      "name": "Mean trigger pressure",
+      "definition": "Mean value of the controller trigger while drawing, from 0 to 1.",
+      "note": "Only drawings saved by newer versions of the game have it."
+    },
+    "leftHandShare": {
+      "name": "Left-hand share",
+      "definition": "Share of the drawn strokes that were drawn with the left hand.",
+      "note": "Compare with the dominant hand of the participant."
+    },
+    "warmShare": {
+      "name": "Warm colours",
+      "definition": "Share of the coloured ink that is warm (red, orange, yellow, pink).",
+      "note": "Grey, black and white ink is not counted. The meaning of colours differs between people, so treat it as a description."
+    },
+    "distinctColours": {
+      "name": "Distinct colours",
+      "definition": "Number of clearly different colours, each with at least 2 % of the ink.",
+      "note": "Similar shades are grouped together."
+    },
+    "eraseRatio": {
+      "name": "Erased strokes",
+      "definition": "Share of all strokes that were erased.",
+      "note": "Can reflect self-correction. Interpret it together with the drawing."
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Generated reports are stored on the server and reused instead of being generated again.",
+    "generateDrawing": "Generate drawing report",
+    "generateSession": "Generate session report",
+    "reused": "A stored report was reused.",
+    "created": "A new report was generated.",
+    "allReports": "All reports",
+    "empty": "No reports have been generated yet.",
+    "columns": {
+      "title": "Report",
+      "kind": "Type",
+      "created": "Generated",
+      "actions": "Actions"
+    },
+    "kinds": {
+      "drawing": "Drawing",
+      "session": "Session"
+    },
+    "stale": "Out of date",
+    "open": "Open",
+    "regenerate": "Regenerate",
+    "delete": "Delete"
+  },
+  "report": {
+    "generated": "Generated {{time}}",
+    "demoNote": "Demo report: generated in the browser from demo data.",
+    "unavailable": "n/a ({{reason}})",
+    "noFlags": "No data quality issues found.",
+    "views": {
+      "front": "Front view",
+      "top": "Top view",
+      "side": "Side view"
+    },
+    "info": {
+      "participant": "Participant",
+      "age": "Age",
+      "gender": "Gender",
+      "dominantHand": "Dominant hand",
+      "session": "Session",
+      "gameType": "Game type",
+      "date": "Date",
+      "description": "Description",
+      "period": "Period",
+      "drawings": "Drawings"
+    },
+    "sectionInfo": "Overview",
+    "sectionSnapshots": "Snapshots",
+    "sectionMetrics": "Metrics",
+    "sectionPalette": "Colours",
+    "sectionFlags": "Data quality",
+    "sectionParticipants": "Participants",
+    "sectionDistribution": "Distribution of the metrics",
+    "metric": "Metric",
+    "min": "Min",
+    "median": "Median",
+    "max": "Max",
+    "disclaimer": "The numbers describe the drawing. They support the psychologist's judgement and are not a diagnosis."
+  },
+  "player": {
+    "title": "My records",
+    "subtitle": "Your information, the sessions you took part in and your drawings.",
+    "info": "My information",
+    "sessions": "Sessions I drew in",
+    "noSessions": "You have not drawn in any session yet.",
+    "drawings": "My drawings",
+    "noDrawings": "You have no drawings yet."
+  },
+  "compare": {
+    "title": "Compare",
+    "subtitle": "Side-by-side comparison of drawings, participants over time and collaborators. This is planned for the second phase."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page does not exist.",
+    "home": "Go to the start page"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "subtitle": "The big picture: where every requirement of requirements.md stands in this prototype.",
+    "requirements": "Requirements",
+    "breakdown": "{{partial}} partly, {{demo}} demo only, {{planned}} planned",
+    "phases": {
+      "MVP": "MVP",
+      "P2": "Phase 2",
+      "P3": "Phase 3"
+    },
+    "status": {
+      "done": "Works",
+      "partial": "Partly works",
+      "demo": "Demo data only",
+      "planned": "Planned"
+    },
+    "areas": {
+      "AUTH": "Access",
+      "ACC": "Access",
+      "DASH": "Dashboard",
+      "SES": "Sessions",
+      "DRW": "Drawings",
+      "PLY": "Player view",
+      "MET": "Metrics",
+      "REP": "Reports",
+      "TEC": "Technical",
+      "PAR": "Participants",
+      "CMP": "Comparison",
+      "MUL": "Multiplayer",
+      "EXP": "Export",
+      "AI": "AI"
+    },
+    "items": {
+      "AUTH-01": "Login with username and password",
+      "AUTH-02": "Token kept in memory only",
+      "AUTH-03": "No sign-up page",
+      "AUTH-04": "Screens depend on the role",
+      "ACC-01": "Psychologists can read everything",
+      "ACC-02": "Players see only their own records",
+      "DASH-01": "Overview tiles and charts",
+      "DASH-02": "Recent sessions and drawings",
+      "DASH-03": "Overview from one server call",
+      "SES-01": "Session list with search, filters and sorting",
+      "SES-02": "Session detail with participants and gallery",
+      "SES-03": "Session statistics",
+      "SES-04": "Session report",
+      "DRW-01": "3D viewer",
+      "DRW-02": "Viewer filters and stroke selection",
+      "DRW-03": "Decimated geometry from the server",
+      "DRW-04": "Drawing page with metrics",
+      "PLY-01": "Player gallery with thumbnails",
+      "PLY-02": "The player's own information",
+      "PLY-03": "Sessions the player drew in",
+      "MET-01": "Metrics computed on the server",
+      "MET-02": "Metric catalogue with definitions",
+      "MET-03": "Review of the old metric definitions",
+      "MET-04": "Unit tests of the metrics",
+      "MET-05": "Old and new drawings, no fake values",
+      "MET-06": "Use of the stored line stats",
+      "MET-07": "Game type labels",
+      "MET-08": "Data quality flags",
+      "REP-01": "Server-side report generation",
+      "REP-02": "Self-contained HTML report",
+      "REP-03": "Report content",
+      "REP-04": "Stored reports are reused",
+      "REP-05": "Escaped text in reports",
+      "REP-06": "Reports for psychologists only",
+      "TEC-01": "React single-page application",
+      "TEC-02": "Server-side analysis module",
+      "TEC-03": "Server file store",
+      "TEC-04": "Cache invalidation by content fingerprint",
+      "TEC-05": "Background jobs",
+      "TEC-06": "Pagination and geometry simplification on the server",
+      "TEC-07": "Readable errors, loading and empty states",
+      "TEC-08": "CORS setting or same-origin serving",
+      "TEC-09": "No secrets, validated IDs",
+      "TEC-10": "Desktop first, accessible",
+      "TEC-11": "Tests",
+      "TEC-12": "Metric catalogue and API documentation",
+      "SES-05": "Session management: create, close, activate",
+      "DRW-05": "Replay of the drawing process",
+      "DRW-06": "3D heatmaps",
+      "DRW-07": "Behaviour timeline",
+      "DRW-08": "Tracked head and hand movement",
+      "DRW-09": "Placed models in the viewer",
+      "PAR-01": "Participant page with history and trends",
+      "CMP-01": "Two drawings side by side",
+      "CMP-02": "Baseline versus follow-up",
+      "CMP-03": "Participant versus cohort",
+      "MUL-01": "Contribution per author",
+      "MUL-02": "Proximity between authors",
+      "MUL-03": "Turn-taking timeline",
+      "REP-07": "Narrative summary from a template",
+      "REP-08": "Participant history report",
+      "EXP-01": "CSV export of the metrics",
+      "EXP-02": "Raw drawing as JSON",
+      "EXP-03": "3D geometry export",
+      "EXP-04": "PNG snapshot of the viewer",
+      "AI-01": "Only free models, all run locally",
+      "AI-02": "Works on CPU, runs as background jobs",
+      "AI-03": "AI can be switched off",
+      "AI-04": "AI output labelled with model and evidence",
+      "AI-05": "Decision support only, no diagnosis",
+      "AI-06": "Model licences and settings page",
+      "AI-07": "Evaluation on a sample set",
+      "AI-10": "Cohort analytics: outliers, similar drawings",
+      "AI-11": "Stroke clustering into objects",
+      "AI-12": "Zero-shot semantic labelling",
+      "AI-13": "Description by a local vision-language model",
+      "AI-14": "Fuzzy logic indicators",
+      "AI-15": "Session-level insight aggregation",
+      "AI-16": "Optional summary by a local language model",
+      "AI-17": "Optional sketch classifier"
+    },
+    "decisionsTitle": "Agreed decisions",
+    "decisionsHint": "The scope decisions of requirements.md that shape this prototype.",
+    "decisions": {
+      "SC-01": "Every psychologist sees every session, drawing and participant.",
+      "SC-02": "No database model changes in this phase.",
+      "SC-03": "The analysis is an additive server module that only reads the existing data.",
+      "SC-04": "The active session stays global, as it is now.",
+      "SC-05": "English UI, all texts in translation files so Hungarian can be added.",
+      "SC-06": "Real names are shown, no consent flags.",
+      "SC-07": "Decision support, not diagnosis."
+    },
+    "futureTitle": "Future improvements",
+    "futureHint": "Ideas that need database, server or game changes, so they are not requirements now.",
+    "future": {
+      "FUT-01": "Session ownership, sharing and a reduced Browse level",
+      "FUT-02": "Parallel psychologists: an active session per psychologist",
+      "FUT-03": "Drawing revision and creation time in the database",
+      "FUT-04": "Persistent store for analysis results and reports",
+      "FUT-05": "Psychologist notes, tags and annotations",
+      "FUT-06": "Session roster and session templates",
+      "FUT-07": "Pseudonyms, anonymised export, audit log, consent flags",
+      "FUT-08": "Paginated list endpoints and a light drawing endpoint",
+      "FUT-09": "Store the figure position in the drawing",
+      "FUT-10": "In-game camera snapshots at save time",
+      "FUT-11": "Object detection (YOLO) once snapshots exist",
+      "FUT-12": "Live session monitor",
+      "FUT-13": "Hungarian UI",
+      "FUT-14": "Saved views and feedback on AI insights"
+    }
+  }
+}
