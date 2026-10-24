@@ -8,7 +8,7 @@
  *  - demo:    the screen exists and works on demo data only (needs a server part that does not exist yet)
  *  - planned: not built yet
  */
-export type Phase = 'MVP' | 'P2' | 'P3'
+export type Phase = 'MVP' | 'P2' | 'P3' | 'P4'
 export type FeatureStatus = 'done' | 'partial' | 'demo' | 'planned'
 
 const features = [
@@ -35,11 +35,24 @@ const features = [
   ['MUL-01', 'P2', 'done'], ['MUL-02', 'P2', 'done'], ['MUL-03', 'P2', 'done'],
   ['REP-07', 'P2', 'done'], ['REP-08', 'P2', 'done'],
   ['EXP-01', 'P2', 'done'], ['EXP-02', 'P2', 'done'], ['EXP-03', 'P2', 'done'], ['EXP-04', 'P2', 'done'],
-  // P3
-  ['AI-01', 'P3', 'planned'], ['AI-02', 'P3', 'planned'], ['AI-03', 'P3', 'planned'], ['AI-04', 'P3', 'planned'],
-  ['AI-05', 'P3', 'planned'], ['AI-06', 'P3', 'planned'], ['AI-07', 'P3', 'planned'],
-  ['AI-10', 'P3', 'planned'], ['AI-11', 'P3', 'planned'], ['AI-12', 'P3', 'planned'], ['AI-13', 'P3', 'planned'],
-  ['AI-14', 'P3', 'planned'], ['AI-15', 'P3', 'planned'], ['AI-16', 'P3', 'planned'], ['AI-17', 'P3', 'planned'],
+  // P3: feedback, questionnaires and admin
+  ['ACC-03', 'P3', 'planned'],
+  ['FBK-01', 'P3', 'planned'], ['FBK-02', 'P3', 'planned'], ['FBK-03', 'P3', 'planned'], ['FBK-04', 'P3', 'planned'],
+  ['FBK-05', 'P3', 'planned'], ['FBK-10', 'P3', 'planned'], ['FBK-11', 'P3', 'planned'], ['FBK-12', 'P3', 'planned'],
+  ['FBK-13', 'P3', 'planned'], ['FBK-14', 'P3', 'planned'], ['FBK-20', 'P3', 'planned'],
+  ['ADM-01', 'P3', 'planned'], ['ADM-02', 'P3', 'planned'], ['ADM-03', 'P3', 'planned'], ['ADM-04', 'P3', 'planned'],
+  ['ADM-05', 'P3', 'planned'], ['ADM-06', 'P3', 'planned'], ['ADM-07', 'P3', 'planned'], ['ADM-08', 'P3', 'planned'],
+  ['ADM-09', 'P3', 'planned'], ['ADM-10', 'P3', 'planned'], ['ADM-11', 'P3', 'planned'], ['ADM-12', 'P3', 'planned'],
+  ['ADM-13', 'P3', 'planned'],
+  ['SEC-01', 'P3', 'planned'], ['SEC-02', 'P3', 'planned'], ['SEC-03', 'P3', 'planned'], ['SEC-04', 'P3', 'planned'],
+  ['SEC-05', 'P3', 'planned'], ['SEC-06', 'P3', 'planned'], ['SEC-07', 'P3', 'planned'], ['SEC-08', 'P3', 'planned'],
+  ['SEC-09', 'P3', 'planned'], ['SEC-10', 'P3', 'planned'], ['SEC-11', 'P3', 'planned'], ['SEC-12', 'P3', 'planned'],
+  ['TEC-13', 'P3', 'planned'], ['TEC-14', 'P3', 'planned'], ['TEC-15', 'P3', 'planned'], ['TEC-16', 'P3', 'planned'],
+  // P4: AI based data analysis and decision support
+  ['AI-01', 'P4', 'planned'], ['AI-02', 'P4', 'planned'], ['AI-03', 'P4', 'planned'], ['AI-04', 'P4', 'planned'],
+  ['AI-05', 'P4', 'planned'], ['AI-06', 'P4', 'planned'], ['AI-07', 'P4', 'planned'],
+  ['AI-10', 'P4', 'planned'], ['AI-11', 'P4', 'planned'], ['AI-12', 'P4', 'planned'], ['AI-13', 'P4', 'planned'],
+  ['AI-14', 'P4', 'planned'], ['AI-15', 'P4', 'planned'], ['AI-16', 'P4', 'planned'], ['AI-17', 'P4', 'planned'],
 ] as const
 
 export type RequirementId = (typeof features)[number][0]
@@ -74,7 +87,8 @@ export function areaOf(id: RequirementId): AreaId {
 export const futureIds = [
   'FUT-01', 'FUT-02', 'FUT-03', 'FUT-04', 'FUT-05', 'FUT-06', 'FUT-07',
   'FUT-08', 'FUT-09', 'FUT-10', 'FUT-11', 'FUT-12', 'FUT-13', 'FUT-14',
+  'FUT-15', 'FUT-16', 'FUT-17', 'FUT-18', 'FUT-19', 'FUT-20', 'FUT-21', 'FUT-22',
 ] as const
 
 /** The agreed scope decisions of requirements.md. Titles: roadmap.decisions.*. */
-export const decisionIds = ['SC-01', 'SC-02', 'SC-03', 'SC-04', 'SC-05', 'SC-06', 'SC-07'] as const
+export const decisionIds = ['SC-01', 'SC-02', 'SC-03', 'SC-04', 'SC-05', 'SC-06', 'SC-07', 'SC-08', 'SC-09'] as const

@@ -17,7 +17,7 @@ export function FeatureStatusBadge({ status }: { status: FeatureStatus }) {
   return <Badge tone={featureTone[status]}>{t(`roadmap.status.${status}`)}</Badge>
 }
 
-const phaseTone: Record<Phase, BadgeTone> = { MVP: 'indigo', P2: 'sky', P3: 'slate' }
+const phaseTone: Record<Phase, BadgeTone> = { MVP: 'indigo', P2: 'sky', P3: 'slate', P4: 'slate' }
 
 export function PhaseBadge({ phase }: { phase: Phase }) {
   return <Badge tone={phaseTone[phase]}>{phase}</Badge>

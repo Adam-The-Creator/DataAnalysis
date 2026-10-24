@@ -8,7 +8,7 @@ import { StatTile } from '@/components/ui/StatTile'
 import { cn } from '@/lib/cn'
 import { areaOf, decisionIds, featureList, futureIds, type Phase } from './registry'
 
-const phases: Phase[] = ['MVP', 'P2', 'P3']
+const phases: Phase[] = ['MVP', 'P2', 'P3', 'P4']
 
 /** The big picture: where every requirement of requirements.md stands, the agreed decisions and the future ideas. */
 export function RoadmapPage() {
@@ -20,7 +20,7 @@ export function RoadmapPage() {
     <>
       <PageHeader title={t('roadmap.title')} subtitle={t('roadmap.subtitle')} />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {phases.map((p) => {
           const inPhase = featureList.filter((f) => f.phase === p)
           const count = (status: string) => inPhase.filter((f) => f.status === status).length
