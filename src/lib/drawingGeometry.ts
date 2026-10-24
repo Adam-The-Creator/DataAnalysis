@@ -1,5 +1,5 @@
 import type { Drawing, DrawingGeometry, StrokeGeometry } from '@/api/types'
-import { computeLineStats, pointTime } from './geometry'
+import { computeLineStats, legacyOffsetMs, legacyTimestampMs, pointTime, strokeTimes } from './geometry'
 import { buildTimeAxis } from './timeAxis'
 
 type Vec = [number, number, number]
@@ -40,10 +40,12 @@ const round = (value: number, digits = 5) => Math.round(value * 10 ** digits) / 
 
 /**
  * The geometry answer built on the client from a whole drawing document. The demo mode uses it, and so does the
- * fallback for a server build that has no geometry endpoint yet. Same result as the analysis module's.
+ * fallback for a server build that has no geometry endpoint yet. Same result as the analysis module's
+ * (analysis/geometry.py), including when an erased stroke was erased.
  */
 export function geometryFromDrawing(drawing: Drawing, tolerance = 0): DrawingGeometry {
   const axis = buildTimeAxis(drawing)
+  const offset = legacyOffsetMs(drawing.lines)
   let duration = 0
   let original = 0
   let returned = 0
@@ -61,11 +63,29 @@ export function geometryFromDrawing(drawing: Drawing, tolerance = 0): DrawingGeo
     original += line.points.length
     returned += points.length
     const pick = (c: { r: number; g: number; b: number }) => ({ r: c.r, g: c.g, b: c.b })
+
+    // When an erased stroke was erased: the last erase or undo of its history, never before the stroke is finished.
+    // The history only has the legacy stamp, the offset puts it on the same axis as the points.
+    const erased = line.status !== 1
+    const times = strokeTimes(line.points)
+    let erasedAtMs: number | null = null
+    if (erased && times) {
+      const stamps = line.history
+        .filter((event) => event.eventType === 0 || event.eventType === 2)
+        .map((event) => legacyTimestampMs(event.timestamp))
+        .filter((stamp): stamp is number => stamp != null)
+      if (stamps.length > 0) {
+        erasedAtMs = Math.max(axis.map(Math.max(...stamps) + (offset ?? 0)), axis.map(times.end))
+        duration = Math.max(duration, erasedAtMs)
+      }
+    }
+
     return {
       id: line.id,
       authorId: line.userID,
       hand: line.hand,
-      erased: line.status !== 1,
+      erased,
+      erasedAtMs,
       width: round((line.startWidth + line.endWidth) / 2),
       startColor: pick(line.startColor),
       endColor: pick(line.endColor),

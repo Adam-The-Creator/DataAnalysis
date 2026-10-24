@@ -8,7 +8,7 @@
 
 // --- Roles ---
 
-export const Role = { None: -1, Player: 0, Psychologist: 1 } as const
+export const Role = { None: -1, Player: 0, Psychologist: 1, Admin: 2 } as const
 export type RoleValue = (typeof Role)[keyof typeof Role]
 
 export interface LoginResult {
@@ -360,6 +360,8 @@ export interface StrokeGeometry {
   authorId: string
   hand: Hand
   erased: boolean
+  /** When an erased stroke was erased, on the time axis. Null: not known, then the replay erases it when it is finished. */
+  erasedAtMs: number | null
   width: number // metres
   startColor: { r: number; g: number; b: number }
   endColor: { r: number; g: number; b: number }
@@ -534,4 +536,163 @@ export interface SessionInput {
   showGirl: boolean
   multiplayer: boolean
   activate?: boolean
+}
+
+// --- Feedback, questionnaires and the admin dashboard (requirements FBK-*, ADM-*) ---
+
+export type FeedbackTarget = 'game' | 'webapp'
+export type InstrumentId = 'SUS' | 'UEQ' | 'SMILEY'
+export type FeedbackCategory = 'problem' | 'idea' | 'praise' | 'other'
+/** The age of a player at the time of sending: child is 12 or younger, unknown is an age that was never filled in. */
+export type AgeBand = 'child' | 'teen' | 'adult' | 'unknown'
+/** Who sent it: a player or a psychologist (the admin does not send). */
+export type SenderRole = typeof Role.Player | typeof Role.Psychologist
+
+/** What the web app needs to build a form; the item texts are in the translations, keyed by the item ID. */
+export interface InstrumentDefinition {
+  id: InstrumentId
+  version: number
+  targets: FeedbackTarget[]
+  scaleMin: number
+  scaleMax: number
+  itemIds: string[]
+}
+
+/** The ID is made up by the client, so a repeated send (double click, retry) is the same submission. */
+export interface QuestionnaireInput {
+  clientId: string
+  instrument: InstrumentId
+  version: number
+  target: FeedbackTarget
+  answers: Record<string, number>
+}
+
+export interface MessageInput {
+  clientId: string
+  target: FeedbackTarget
+  category: FeedbackCategory | null
+  text: string
+}
+
+export interface SubmissionReceipt {
+  id: string
+  createdAt: string // ISO
+}
+
+export type MySubmission =
+  | { kind: 'questionnaire'; id: string; createdAt: string; target: FeedbackTarget; instrument: InstrumentId }
+  | { kind: 'message'; id: string; createdAt: string; target: FeedbackTarget; category: FeedbackCategory | null; text: string }
+
+export interface MySubmissions {
+  total: number
+  items: MySubmission[]
+}
+
+export interface UsageNumbers {
+  registered: { total: number; players: number; psychologists: number; admins: number }
+  /** A player who has a drawing, a psychologist who signed in at least once. */
+  used: { players: number; psychologists: number }
+  accountsPerWeek: { weekStart: string; players: number; psychologists: number; total: number }[]
+  submissions: { questionnaires: number; messages: number; unreadMessages: number }
+}
+
+export type CountingRule = 'latest' | 'all'
+
+export interface ResultFilters {
+  target?: FeedbackTarget
+  role?: SenderRole
+  ageBand?: AgeBand
+  version?: number
+  dateFrom?: string // YYYY-MM-DD
+  dateTo?: string
+  counting: CountingRule
+}
+
+export interface SusStats {
+  mean: number
+  sd: number
+  median: number
+  min: number
+  max: number
+  histogram: { from: number; to: number; count: number }[]
+  /** Each item as 0 (worst) to 4 (best). */
+  items: { id: string; mean: number }[]
+}
+
+export type UeqScaleId = 'attractiveness' | 'perspicuity' | 'efficiency' | 'dependability' | 'stimulation' | 'novelty'
+
+export interface UeqStats {
+  scales: { id: UeqScaleId; mean: number; low: number; high: number }[]
+  pragmatic: number
+  hedonic: number
+  /** Each item as -3 (very negative) to +3 (very positive). */
+  items: { id: string; mean: number }[]
+}
+
+export interface SmileyStats {
+  mean: number
+  items: { id: string; mean: number; distribution: number[] }[] // how many chose face 1..5
+}
+
+export interface ResultGroup {
+  instrument: InstrumentId
+  target: FeedbackTarget
+  role: SenderRole
+  n: number
+  accounts: number
+  versions: number[]
+  ageBands: Partial<Record<AgeBand, number>>
+  /** False below the minimum group size: then there are no statistics, only the size. */
+  enough: boolean
+  sus?: SusStats
+  ueq?: UeqStats
+  smiley?: SmileyStats
+}
+
+export interface TrendPoint {
+  instrument: InstrumentId
+  target: FeedbackTarget
+  role: SenderRole
+  week: string // YYYY-MM-DD, the Monday
+  n: number
+  mean: number
+}
+
+export interface QuestionnaireResults {
+  counting: CountingRule
+  minGroupSize: number
+  submissions: number
+  counted: number
+  groups: ResultGroup[]
+  trend: TrendPoint[]
+}
+
+export interface AdminMessage {
+  id: string
+  /** The pseudonym of the sender: stable, and nothing that identifies the account. */
+  code: string
+  role: SenderRole
+  ageBand: AgeBand
+  target: FeedbackTarget
+  category: FeedbackCategory | null
+  text: string
+  createdAt: string // ISO
+  isRead: boolean
+}
+
+export interface MessageFilters {
+  target?: FeedbackTarget
+  category?: FeedbackCategory
+  role?: SenderRole
+  ageBand?: AgeBand
+  dateFrom?: string
+  dateTo?: string
+  read?: 'read' | 'unread'
+  q?: string
+}
+
+export interface MessagePage {
+  total: number
+  unread: number
+  items: AdminMessage[]
 }

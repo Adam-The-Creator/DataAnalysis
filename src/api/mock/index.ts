@@ -15,6 +15,7 @@ import {
   analyzeMultiplayer, buildHeatmap, buildTimeline, compareWithCohort, historyRow, summarizeTracking,
 } from './analytics'
 import { exportDrawingFile, sessionCsv } from './exports'
+import { DEMO_ADMIN, mockFeedback } from './feedback'
 import { buildDrawingReport, buildParticipantReport, buildSessionReport } from './reportHtml'
 import { DEFAULT_SESSION_ID } from '@/lib/sessions'
 import { getWorld } from './world'
@@ -34,6 +35,9 @@ function later<T>(compute: () => T, ms = 180): Promise<T> {
   })
 }
 
+/** The feedback stand-in answers at once: this gives it the same little latency as the other demo calls. */
+const after = <T>(ms: number, call: () => Promise<T>): Promise<T> => later(() => undefined, ms).then(call)
+
 const notFound = (what: string) => new ApiError('http', 404, `${what} not found`)
 const badRequest = (detail: string) => new ApiError('http', 400, detail)
 
@@ -44,7 +48,7 @@ function findDrawing(drawingId: string): Drawing {
 }
 
 function infoOf(id: string): PlayerInfo | undefined {
-  return getWorld().players.find((p) => p.id === id)?.info
+  return getWorld().players.find((p) => p.id === id)?.info ?? (id === DEMO_ADMIN.id ? DEMO_ADMIN.info : undefined)
 }
 
 function findSession(sessionId: string): Session {
@@ -141,7 +145,7 @@ export const mockApi: Api = {
   auth: {
     login: (username, password) =>
       later(() => {
-        const player = getWorld().players.find((p) => p.username === username)
+        const player = getWorld().players.find((p) => p.username === username) ?? (username === DEMO_ADMIN.username ? DEMO_ADMIN : undefined)
         if (!player || password !== 'demo') {
           throw new ApiError('http', 401, 'Invalid username or password.')
         }
@@ -149,7 +153,7 @@ export const mockApi: Api = {
       }),
     role: (playerId) =>
       later(() => {
-        const player = getWorld().players.find((p) => p.id === playerId)
+        const player = getWorld().players.find((p) => p.id === playerId) ?? (playerId === DEMO_ADMIN.id ? DEMO_ADMIN : undefined)
         if (!player) throw notFound('Player')
         return player.role
       }, 60),
@@ -348,5 +352,23 @@ export const mockApi: Api = {
       later(() => {
         reportStore = reports().filter((r) => r.info.id !== reportId)
       }, 100),
+  },
+
+  // Questionnaires, messages and the admin dashboard (requirements FBK-*, ADM-*)
+  feedback: {
+    instruments: () => after(80, () => mockFeedback.feedback.instruments()),
+    sendQuestionnaire: (input) => after(250, () => mockFeedback.feedback.sendQuestionnaire(input)),
+    sendMessage: (input) => after(250, () => mockFeedback.feedback.sendMessage(input)),
+    mine: (limit, offset) => after(120, () => mockFeedback.feedback.mine(limit, offset)),
+  },
+  admin: {
+    usage: () => after(150, () => mockFeedback.admin.usage()),
+    questionnaireResults: (filters) => after(250, () => mockFeedback.admin.questionnaireResults(filters)),
+    messages: (filters, limit, offset) => after(150, () => mockFeedback.admin.messages(filters, limit, offset)),
+    setMessageRead: (messageId, read) => after(100, () => mockFeedback.admin.setMessageRead(messageId, read)),
+    deleteMessage: (messageId) => after(100, () => mockFeedback.admin.deleteMessage(messageId)),
+    exportQuestionnaires: (instrument, dialect, filters) =>
+      after(250, () => mockFeedback.admin.exportQuestionnaires(instrument, dialect, filters)),
+    exportMessages: (dialect, filters) => after(250, () => mockFeedback.admin.exportMessages(dialect, filters)),
   },
 }

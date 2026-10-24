@@ -14,6 +14,8 @@ export interface ViewerStroke {
   authorId: string
   hand: 'left' | 'right'
   erased: boolean
+  /** When it was erased (ms on the drawing's time axis), if it was and the history says when. */
+  erasedAtMs: number | null
   positions: number[] // x, y, z per point (viewer space)
   colors: number[] // r, g, b per point, linear 0..1
   times: (number | null)[] // ms on the drawing's time axis, per point (null without time data)
@@ -56,6 +58,7 @@ export function toViewerStrokes(geometry: DrawingGeometry): ViewerStroke[] {
         authorId: stroke.authorId,
         hand: stroke.hand === -1 ? 'left' : 'right',
         erased: stroke.erased,
+        erasedAtMs: stroke.erasedAtMs,
         positions,
         colors,
         times,
@@ -109,14 +112,23 @@ export function canReplay(strokes: ViewerStroke[]): boolean {
   return strokes.some((s) => strokeSpan(s) !== null)
 }
 
-export type ReplayPhase = 'hidden' | 'partial' | 'full'
+/**
+ * How a stroke looks at replay time t (null: no replay, the whole drawing is shown).
+ *
+ * A stroke that was erased is there from the moment it is drawn, like any other, and gone from the moment it was erased
+ * (its erasedAtMs, or the moment it is finished when the history does not say). With `showErased` it is not gone then
+ * but stays as the dimmed ghost the static view shows for erased strokes. A stroke without time data is always there.
+ */
+export type StrokeLook = { visible: false } | { visible: true; part: 'whole' | 'partial'; ghost: boolean }
 
-/** Where a stroke is at replay time t. A stroke without time data is always there. */
-export function replayPhase(stroke: ViewerStroke, time: number | null): ReplayPhase {
-  if (time === null) return 'full'
+export function replayLook(stroke: ViewerStroke, time: number | null, showErased: boolean): StrokeLook {
   const span = strokeSpan(stroke)
-  if (!span || time >= span.end) return 'full'
-  return time < span.start ? 'hidden' : 'partial'
+  if (time === null || !span) return { visible: true, part: 'whole', ghost: stroke.erased }
+  if (time < span.start) return { visible: false }
+  if (time < span.end) return { visible: true, part: 'partial', ghost: false }
+  if (!stroke.erased) return { visible: true, part: 'whole', ghost: false }
+  if (time < (stroke.erasedAtMs ?? span.end)) return { visible: true, part: 'whole', ghost: false }
+  return showErased ? { visible: true, part: 'whole', ghost: true } : { visible: false }
 }
 
 /** The part of a stroke drawn until time t: the points so far, and an end point interpolated to exactly t. */

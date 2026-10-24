@@ -19,7 +19,7 @@ export function SessionActions({ session, status }: { session: Session; status: 
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
-  const [confirm, setConfirm] = useState<'close' | 'remove' | null>(null)
+  const [confirm, setConfirm] = useState<'activate' | 'close' | 'remove' | null>(null)
   const action = useSessionAction(session.id, () => void navigate('/sessions'))
 
   function run(kind: 'activate' | 'close' | 'remove') {
@@ -36,7 +36,8 @@ export function SessionActions({ session, status }: { session: Session; status: 
     <>
       <Button variant="secondary" onClick={() => setEditing(true)}>{t('sessionActions.edit')}</Button>
       {status === 'open' && (
-        <Button variant="secondary" disabled={action.isPending} onClick={() => run('activate')}>
+        // Asks first, so a misclick cannot send everybody's new drawings into another session
+        <Button variant="secondary" disabled={action.isPending} onClick={() => { action.reset(); setConfirm('activate') }}>
           {t('sessionActions.activate')}
         </Button>
       )}
@@ -58,6 +59,16 @@ export function SessionActions({ session, status }: { session: Session; status: 
       )}
 
       <SessionFormDialog open={editing} onClose={() => setEditing(false)} session={session} />
+      <ConfirmDialog
+        open={confirm === 'activate'}
+        onClose={cancel}
+        title={t('sessionActions.activateTitle')}
+        body={t('sessionActions.activateBody', { name: session.name })}
+        confirmLabel={t('sessionActions.activate')}
+        busy={action.isPending}
+        error={action.isError && confirm === 'activate' ? action.error : undefined}
+        onConfirm={() => run('activate')}
+      />
       <ConfirmDialog
         open={confirm === 'close'}
         onClose={cancel}

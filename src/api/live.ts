@@ -3,9 +3,10 @@ import { ApiError, notImplemented, type FeatureId } from './errors'
 import { del, get, getBlob, getText, post, put } from './http'
 import { buildOverview } from './overview'
 import type {
-  CohortFilters, CohortResult, CreatedReport, Drawing, DrawingAnalysis, DrawingGeometry, DrawingMeta, HeatmapData,
-  LoginResult, MultiplayerData, Overview, ParticipantHistory, PlayerInfo, RecentDrawing, ReportInfo, RoleValue,
-  Session, SessionInput, SessionStats, SessionSummary, TimePoint, TimelineData, TrackingData,
+  AdminMessage, CohortFilters, CohortResult, CreatedReport, Drawing, DrawingAnalysis, DrawingGeometry, DrawingMeta,
+  HeatmapData, InstrumentDefinition, LoginResult, MessagePage, MultiplayerData, MySubmissions, Overview,
+  ParticipantHistory, PlayerInfo, QuestionnaireResults, RecentDrawing, ReportInfo, RoleValue, Session, SessionInput,
+  SessionStats, SessionSummary, SubmissionReceipt, TimePoint, TimelineData, TrackingData, UsageNumbers,
 } from './types'
 import { geometryFromDrawing } from '@/lib/drawingGeometry'
 
@@ -201,5 +202,40 @@ export const liveApi: Api = {
     deleteReport: async (reportId) => {
       await analysis(() => del(`/analysis/reports/${reportId}`), 'reports', ['REP-04', 'TEC-02', 'TEC-03'])
     },
+  },
+
+  // A server build without the feedback module answers "Not Found": the screens show a "not implemented" panel
+  feedback: {
+    instruments: () => analysis(() => get<InstrumentDefinition[]>('/feedback/instruments'), 'feedback', ['FBK-01', 'TEC-13']),
+    sendQuestionnaire: (input) =>
+      analysis(() => post<SubmissionReceipt>('/feedback/questionnaires', input), 'feedback', ['FBK-10', 'FBK-11', 'TEC-13']),
+    sendMessage: (input) =>
+      analysis(() => post<SubmissionReceipt>('/feedback/messages', input), 'feedback', ['FBK-20', 'TEC-13']),
+    mine: (limit, offset) =>
+      analysis(() => get<MySubmissions>(`/feedback/mine${query({ limit, offset })}`), 'feedback', ['FBK-04', 'TEC-13']),
+  },
+
+  admin: {
+    usage: () => analysis(() => get<UsageNumbers>('/admin/usage'), 'admin', ['ADM-05', 'TEC-13']),
+    questionnaireResults: (filters) =>
+      analysis(
+        () => get<QuestionnaireResults>(`/admin/questionnaires/results${query({ ...filters })}`),
+        'admin', ['ADM-06', 'ADM-07', 'ADM-08', 'TEC-13'],
+      ),
+    messages: (filters, limit, offset) =>
+      analysis(() => get<MessagePage>(`/admin/messages${query({ ...filters, limit, offset })}`), 'admin', ['ADM-11', 'TEC-13']),
+    // PUT, not PATCH: the server's CORS setting only allows GET, POST, PUT and DELETE
+    setMessageRead: (messageId, read) =>
+      analysis(() => put<AdminMessage>(`/admin/messages/${messageId}/read`, { read }), 'admin', ['ADM-11', 'TEC-13']),
+    deleteMessage: async (messageId) => {
+      await analysis(() => del(`/admin/messages/${messageId}`), 'admin', ['ADM-11', 'TEC-13'])
+    },
+    exportQuestionnaires: (instrument, dialect, filters) =>
+      analysis(
+        () => getBlob(`/admin/export/questionnaires${query({ ...filters, instrument, dialect })}`),
+        'admin', ['ADM-13', 'TEC-13'],
+      ),
+    exportMessages: (dialect, filters) =>
+      analysis(() => getBlob(`/admin/export/messages${query({ ...filters, dialect })}`), 'admin', ['ADM-13', 'TEC-13']),
   },
 }

@@ -1,8 +1,9 @@
 import type {
-  CohortFilters, CohortResult, CreatedReport, CsvDialect, Drawing, DrawingAnalysis, DrawingGeometry, DrawingMeta,
-  ExportFormat, HeatmapData, LoginResult, MultiplayerData, Overview, ParticipantHistory, PlayerInfo, PlayerListEntry,
-  RecentDrawing, ReportInfo, ReportKind, RoleValue, Session, SessionInput, SessionStats, SessionSummary, TimePoint,
-  TimelineData, TrackingData,
+  AdminMessage, CohortFilters, CohortResult, CreatedReport, CsvDialect, Drawing, DrawingAnalysis, DrawingGeometry,
+  DrawingMeta, ExportFormat, HeatmapData, InstrumentDefinition, InstrumentId, LoginResult, MessageFilters, MessageInput,
+  MessagePage, MultiplayerData, MySubmissions, Overview, ParticipantHistory, PlayerInfo, PlayerListEntry,
+  QuestionnaireInput, QuestionnaireResults, RecentDrawing, ReportInfo, ReportKind, ResultFilters, RoleValue, Session,
+  SessionInput, SessionStats, SessionSummary, SubmissionReceipt, TimePoint, TimelineData, TrackingData, UsageNumbers,
 } from './types'
 
 /**
@@ -71,5 +72,26 @@ export interface Api {
     createReport(kind: ReportKind, targetId: string, regenerate?: boolean): Promise<CreatedReport>
     reportHtml(reportId: string): Promise<string>
     deleteReport(reportId: string): Promise<void>
+  }
+
+  /** Questionnaires and messages of a player or psychologist (requirements FBK-01..FBK-20). */
+  feedback: {
+    instruments(): Promise<InstrumentDefinition[]>
+    /** Refused with the server's own message when a send limit is reached (SEC-01). */
+    sendQuestionnaire(input: QuestionnaireInput): Promise<SubmissionReceipt>
+    sendMessage(input: MessageInput): Promise<SubmissionReceipt>
+    /** The caller's own submissions, newest first. */
+    mine(limit: number, offset: number): Promise<MySubmissions>
+  }
+
+  /** The admin dashboard (requirements ADM-01..ADM-13). The senders are pseudonym codes. */
+  admin: {
+    usage(): Promise<UsageNumbers>
+    questionnaireResults(filters: ResultFilters): Promise<QuestionnaireResults>
+    messages(filters: MessageFilters, limit: number, offset: number): Promise<MessagePage>
+    setMessageRead(messageId: string, read: boolean): Promise<AdminMessage>
+    deleteMessage(messageId: string): Promise<void>
+    exportQuestionnaires(instrument: InstrumentId, dialect: CsvDialect, filters: ResultFilters): Promise<Blob>
+    exportMessages(dialect: CsvDialect, filters: MessageFilters): Promise<Blob>
   }
 }

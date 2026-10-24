@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         api.auth.role(result.playerId),
         api.players.info(result.playerId),
       ])
-      if (role !== Role.Psychologist && role !== Role.Player) {
+      if (role !== Role.Psychologist && role !== Role.Player && role !== Role.Admin) {
         throw new ApiError('http', 403)
       }
       setUser({ playerId: result.playerId, role, name: displayName(info, result.playerId) })

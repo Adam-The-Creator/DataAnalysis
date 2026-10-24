@@ -36,18 +36,22 @@ const features = [
   ['REP-07', 'P2', 'done'], ['REP-08', 'P2', 'done'],
   ['EXP-01', 'P2', 'done'], ['EXP-02', 'P2', 'done'], ['EXP-03', 'P2', 'done'], ['EXP-04', 'P2', 'done'],
   // P3: feedback, questionnaires and admin
-  ['ACC-03', 'P3', 'planned'],
-  ['FBK-01', 'P3', 'planned'], ['FBK-02', 'P3', 'planned'], ['FBK-03', 'P3', 'planned'], ['FBK-04', 'P3', 'planned'],
-  ['FBK-05', 'P3', 'planned'], ['FBK-10', 'P3', 'planned'], ['FBK-11', 'P3', 'planned'], ['FBK-12', 'P3', 'planned'],
-  ['FBK-13', 'P3', 'planned'], ['FBK-14', 'P3', 'planned'], ['FBK-20', 'P3', 'planned'],
-  ['ADM-01', 'P3', 'planned'], ['ADM-02', 'P3', 'planned'], ['ADM-03', 'P3', 'planned'], ['ADM-04', 'P3', 'planned'],
-  ['ADM-05', 'P3', 'planned'], ['ADM-06', 'P3', 'planned'], ['ADM-07', 'P3', 'planned'], ['ADM-08', 'P3', 'planned'],
-  ['ADM-09', 'P3', 'planned'], ['ADM-10', 'P3', 'planned'], ['ADM-11', 'P3', 'planned'], ['ADM-12', 'P3', 'planned'],
-  ['ADM-13', 'P3', 'planned'],
-  ['SEC-01', 'P3', 'planned'], ['SEC-02', 'P3', 'planned'], ['SEC-03', 'P3', 'planned'], ['SEC-04', 'P3', 'planned'],
-  ['SEC-05', 'P3', 'planned'], ['SEC-06', 'P3', 'planned'], ['SEC-07', 'P3', 'planned'], ['SEC-08', 'P3', 'planned'],
-  ['SEC-09', 'P3', 'planned'], ['SEC-10', 'P3', 'planned'], ['SEC-11', 'P3', 'planned'], ['SEC-12', 'P3', 'planned'],
-  ['TEC-13', 'P3', 'planned'], ['TEC-14', 'P3', 'planned'], ['TEC-15', 'P3', 'planned'], ['TEC-16', 'P3', 'planned'],
+  // Partly: FBK-12 (the wording has to be compared with the official handbooks), FBK-14 (the smiley questions are a
+  // proposal), ADM-08 (no benchmark comparison), SEC-09 (no CSP: the server does not serve the app), SEC-10 (HTTPS
+  // is a matter of the deployment), SEC-11 (blocked logins are logged, single failed ones are not), TEC-16 (the UI
+  // flows were checked by throw-away scripts, there is no test runner in the repo). Planned: FBK-13 (terms of use).
+  ['ACC-03', 'P3', 'done'],
+  ['FBK-01', 'P3', 'done'], ['FBK-02', 'P3', 'done'], ['FBK-03', 'P3', 'done'], ['FBK-04', 'P3', 'done'],
+  ['FBK-05', 'P3', 'done'], ['FBK-10', 'P3', 'done'], ['FBK-11', 'P3', 'done'], ['FBK-12', 'P3', 'partial'],
+  ['FBK-13', 'P3', 'planned'], ['FBK-14', 'P3', 'partial'], ['FBK-20', 'P3', 'done'],
+  ['ADM-01', 'P3', 'done'], ['ADM-02', 'P3', 'done'], ['ADM-03', 'P3', 'done'], ['ADM-04', 'P3', 'done'],
+  ['ADM-05', 'P3', 'done'], ['ADM-06', 'P3', 'done'], ['ADM-07', 'P3', 'done'], ['ADM-08', 'P3', 'partial'],
+  ['ADM-09', 'P3', 'done'], ['ADM-10', 'P3', 'done'], ['ADM-11', 'P3', 'done'], ['ADM-12', 'P3', 'done'],
+  ['ADM-13', 'P3', 'done'],
+  ['SEC-01', 'P3', 'done'], ['SEC-02', 'P3', 'done'], ['SEC-03', 'P3', 'done'], ['SEC-04', 'P3', 'done'],
+  ['SEC-05', 'P3', 'done'], ['SEC-06', 'P3', 'done'], ['SEC-07', 'P3', 'done'], ['SEC-08', 'P3', 'done'],
+  ['SEC-09', 'P3', 'partial'], ['SEC-10', 'P3', 'partial'], ['SEC-11', 'P3', 'partial'], ['SEC-12', 'P3', 'done'],
+  ['TEC-13', 'P3', 'done'], ['TEC-14', 'P3', 'done'], ['TEC-15', 'P3', 'done'], ['TEC-16', 'P3', 'partial'],
   // P4: AI based data analysis and decision support
   ['AI-01', 'P4', 'planned'], ['AI-02', 'P4', 'planned'], ['AI-03', 'P4', 'planned'], ['AI-04', 'P4', 'planned'],
   ['AI-05', 'P4', 'planned'], ['AI-06', 'P4', 'planned'], ['AI-07', 'P4', 'planned'],

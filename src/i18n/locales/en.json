@@ -11,7 +11,10 @@
     "compare": "Compare",
     "reports": "Reports",
     "roadmap": "Roadmap",
-    "myRecords": "My records"
+    "myRecords": "My records",
+    "feedback": "Feedback",
+    "adminUsage": "Usage",
+    "adminFeedback": "Feedback"
   },
   "mode": {
     "demo": "Demo data (no server)",
@@ -19,7 +22,8 @@
   },
   "roles": {
     "psychologist": "Psychologist",
-    "player": "Player"
+    "player": "Player",
+    "admin": "Admin"
   },
   "common": {
     "loading": "Loading…",
@@ -42,7 +46,7 @@
   },
   "notImplemented": {
     "title": "Not implemented yet",
-    "body": "{{feature}} needs the server-side analysis module, which this server does not have. A newer server build is needed.",
+    "body": "{{feature}} needs a part of the server (the analysis or the feedback module) that this server build does not have. A newer server build is needed.",
     "hint": "Choose “Demo data” on the login page to preview how this will look.",
     "features": {
       "overview": "The overview",
@@ -59,7 +63,9 @@
       "multiplayer": "The multiplayer analysis",
       "cohort": "The comparison with a group",
       "history": "The participant history",
-      "export": "The export"
+      "export": "The export",
+      "feedback": "The feedback page",
+      "admin": "The admin dashboard"
     }
   },
   "planned": {
@@ -81,6 +87,7 @@
     "demoHint": "Generated sample sessions and drawings. No server is needed.",
     "demoPsychologist": "Enter as psychologist",
     "demoPlayer": "Enter as player",
+    "demoAdmin": "Enter as admin",
     "serverUrl": "Server URL",
     "username": "Username",
     "password": "Password",
@@ -162,6 +169,8 @@
     "close": "Close session",
     "delete": "Delete",
     "defaultCannotClose": "The default session cannot be closed.",
+    "activateTitle": "Make this session active?",
+    "activateBody": "From now on, the drawings that every player saves on this server go into \"{{name}}\", until another session is made active. There is only one active session for the whole server.",
     "closeTitle": "Close this session?",
     "closeBody": "Nobody can save drawings into a closed session any more, and it cannot be made active again.",
     "deleteTitle": "Delete this session?",
@@ -607,6 +616,7 @@
       "gender": "Gender",
       "dominantHand": "Dominant hand",
       "session": "Session",
+      "sessionDescription": "Session description",
       "gameType": "Game type",
       "date": "Date",
       "description": "Description",
@@ -698,6 +708,245 @@
       "tooSmall": "A group of {{count}} drawings is too small for percentiles (at least 3 are needed). Widen the group.",
       "thisDrawing": "This drawing",
       "percentile": "Percentile"
+    }
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitleGame": "Tell us what you think about the game. You can fill in a questionnaire or send a message as often as you like, one after the other.",
+    "subtitleWebapp": "Rate the game and this web application. You can fill in a questionnaire or send a message as often as you like, one after the other.",
+    "targets": {
+      "game": "The game",
+      "webapp": "The web application"
+    },
+    "subject": {
+      "game": "the game",
+      "webapp": "the web application"
+    },
+    "categories": {
+      "problem": "A problem",
+      "idea": "An idea",
+      "praise": "Something I liked",
+      "other": "Something else"
+    },
+    "categoryNone": "No type",
+    "questionnaires": "Questionnaires",
+    "questionnairesHint": "Standard questionnaires about how it felt to use it. The people who evaluate them see a code instead of your name.",
+    "rate": "What do you want to rate?",
+    "fillIn": "Fill in",
+    "hide": "Close",
+    "instruments": {
+      "SUS": { "name": "Usability (SUS)", "hint": "10 short statements, about 2 minutes." },
+      "UEQ": { "name": "User experience (UEQ)", "hint": "26 pairs of words, about 5 minutes." },
+      "SMILEY": { "name": "How was it?", "hint": "4 quick questions, answer with a face." }
+    },
+    "faces": {
+      "1": "Very sad",
+      "2": "Sad",
+      "3": "Okay",
+      "4": "Happy",
+      "5": "Very happy"
+    },
+    "progress": "{{done}} of {{total}} answered",
+    "incomplete": "Please answer every question before you send.",
+    "send": "Send answers",
+    "sending": "Sending…",
+    "thanks": "Thank you! Your answers were sent.",
+    "limited": "You sent this recently",
+    "message": {
+      "title": "Send a message",
+      "hint": "Tell us what works, what does not, or what you would like. Plain text only, up to {{max}} characters.",
+      "about": "About",
+      "category": "Type (optional)",
+      "text": "Your message",
+      "counter": "{{count}} of {{max}} characters",
+      "send": "Send message",
+      "thanks": "Thank you! Your message was sent."
+    },
+    "mine": {
+      "title": "What I sent",
+      "empty": "You have not sent anything yet.",
+      "questionnaire": "Questionnaire: {{name}}",
+      "message": "Message",
+      "messageOfType": "Message: {{type}}",
+      "about": "About: {{target}}"
+    }
+  },
+  "instruments": {
+    "sus": {
+      "scale": {
+        "1": "Strongly disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly agree"
+      },
+      "items": {
+        "sus1": "I think that I would like to use {{subject}} frequently.",
+        "sus2": "I found {{subject}} unnecessarily complex.",
+        "sus3": "I thought {{subject}} was easy to use.",
+        "sus4": "I think that I would need the support of a technical person to be able to use {{subject}}.",
+        "sus5": "I found the various functions in {{subject}} were well integrated.",
+        "sus6": "I thought there was too much inconsistency in {{subject}}.",
+        "sus7": "I would imagine that most people would learn to use {{subject}} very quickly.",
+        "sus8": "I found {{subject}} very cumbersome to use.",
+        "sus9": "I felt very confident using {{subject}}.",
+        "sus10": "I needed to learn a lot of things before I could get going with {{subject}}."
+      }
+    },
+    "ueq": {
+      "intro": "For each pair of words, choose the circle that fits best. The closer it is to a word, the better that word describes {{subject}}.",
+      "items": {
+        "ueq1": { "left": "annoying", "right": "enjoyable" },
+        "ueq2": { "left": "not understandable", "right": "understandable" },
+        "ueq3": { "left": "creative", "right": "dull" },
+        "ueq4": { "left": "easy to learn", "right": "difficult to learn" },
+        "ueq5": { "left": "valuable", "right": "inferior" },
+        "ueq6": { "left": "boring", "right": "exciting" },
+        "ueq7": { "left": "not interesting", "right": "interesting" },
+        "ueq8": { "left": "unpredictable", "right": "predictable" },
+        "ueq9": { "left": "fast", "right": "slow" },
+        "ueq10": { "left": "inventive", "right": "conventional" },
+        "ueq11": { "left": "obstructive", "right": "supportive" },
+        "ueq12": { "left": "good", "right": "bad" },
+        "ueq13": { "left": "complicated", "right": "easy" },
+        "ueq14": { "left": "unlikable", "right": "pleasing" },
+        "ueq15": { "left": "usual", "right": "leading edge" },
+        "ueq16": { "left": "unpleasant", "right": "pleasant" },
+        "ueq17": { "left": "secure", "right": "not secure" },
+        "ueq18": { "left": "motivating", "right": "demotivating" },
+        "ueq19": { "left": "meets expectations", "right": "does not meet expectations" },
+        "ueq20": { "left": "inefficient", "right": "efficient" },
+        "ueq21": { "left": "clear", "right": "confusing" },
+        "ueq22": { "left": "impractical", "right": "practical" },
+        "ueq23": { "left": "organized", "right": "cluttered" },
+        "ueq24": { "left": "attractive", "right": "unattractive" },
+        "ueq25": { "left": "friendly", "right": "unfriendly" },
+        "ueq26": { "left": "conservative", "right": "innovative" }
+      },
+      "scales": {
+        "attractiveness": "Attractiveness",
+        "perspicuity": "Perspicuity",
+        "efficiency": "Efficiency",
+        "dependability": "Dependability",
+        "stimulation": "Stimulation",
+        "novelty": "Novelty"
+      }
+    },
+    "smiley": {
+      "items": {
+        "smiley1": "Did you like drawing in the game?",
+        "smiley2": "Was the game easy to use?",
+        "smiley3": "Did you feel well while you played?",
+        "smiley4": "Would you like to draw again?"
+      }
+    }
+  },
+  "admin": {
+    "usage": {
+      "title": "Usage",
+      "subtitle": "How many accounts exist, and how many of them used the game.",
+      "registered": "Registered accounts",
+      "registeredHint": "{{players}} players, {{psychologists}} psychologists, {{admins}} admin",
+      "usedPlayers": "Players who used the game",
+      "usedPsychologists": "Psychologists who used it",
+      "usedOf": "of {{count}}",
+      "usedDefinition": "A player has used the game when they saved at least one drawing. A psychologist has used it when they signed in at least once (sessions have no owner, and signing in to the web application counts too), so this number is approximate.",
+      "questionnaires": "Questionnaires sent",
+      "messages": "Messages sent",
+      "unread": "{{count}} unread",
+      "perWeek": "New accounts per week",
+      "weekOf": "Week of {{date}}",
+      "openFeedback": "Open the feedback"
+    },
+    "feedback": {
+      "title": "Feedback",
+      "subtitle": "The results of the questionnaires and the messages people sent. Senders are shown as codes only: the same person always has the same code, and nobody is named.",
+      "tabs": {
+        "questionnaires": "Questionnaires",
+        "messages": "Messages"
+      },
+      "all": "All",
+      "filters": {
+        "target": "About",
+        "role": "Sender",
+        "ageBand": "Age",
+        "counting": "Count",
+        "version": "Version",
+        "from": "From",
+        "to": "To",
+        "category": "Type",
+        "status": "Status",
+        "search": "Search the text",
+        "apply": "Search",
+        "clear": "Clear filters"
+      },
+      "ageBands": {
+        "child": "12 or younger",
+        "teen": "13 to 17",
+        "adult": "18 and over",
+        "unknown": "Not known"
+      },
+      "counting": {
+        "latest": "Latest per person",
+        "all": "Every submission"
+      },
+      "countingHint": "People can send a questionnaire again, so “latest per person” counts each person once. “Every submission” counts all of them.",
+      "status": {
+        "unread": "Unread",
+        "read": "Read"
+      }
+    },
+    "results": {
+      "empty": "No questionnaires match this selection.",
+      "summary": "{{counted}} submissions counted, {{total}} sent in this selection.",
+      "submissions": "{{count}} submissions",
+      "n": "Submissions",
+      "people": "{{count}} people",
+      "notEnough": "Only {{count}} so far. Results are shown from {{min}} submissions on, which also keeps the senders anonymous.",
+      "mean": "Mean",
+      "sd": "Standard deviation",
+      "median": "Median",
+      "range": "Lowest to highest",
+      "susReference": "Reference: a score of 68 is the commonly used average. It is an indication, not a verdict.",
+      "histogram": "Scores in steps of 10",
+      "susItems": "Each statement",
+      "susItemsHint": "Mean contribution to the score, from 0 (worst) to 4 (best).",
+      "ueqScales": "Scales",
+      "ueqScalesHint": "Mean with its 95 % confidence interval, from -3 (very negative) to +3 (very positive).",
+      "pragmatic": "Pragmatic quality (perspicuity, efficiency, dependability)",
+      "hedonic": "Hedonic quality (stimulation, novelty)",
+      "ueqItems": "Each item",
+      "ueqItemsHint": "Mean, from -3 to +3. The word pair is written as in the questionnaire.",
+      "smileyHint": "How many people chose each face, per question (1 is the saddest face).",
+      "faceCount": "Face {{face}}",
+      "trend": "Over time",
+      "trendHint": "Mean per week. Weeks with fewer than {{min}} submissions are left out.",
+      "week": "Week of",
+      "ci": "{{mean}} (95 % interval {{low}} to {{high}})"
+    },
+    "messages": {
+      "empty": "No messages match this selection.",
+      "summary": "{{total}} messages, {{unread}} unread.",
+      "new": "New",
+      "markRead": "Mark as read",
+      "markUnread": "Mark as unread",
+      "delete": "Delete",
+      "deleteTitle": "Delete this message?",
+      "deleteBody": "It is removed for good. The person who sent it will be able to send messages again within their limits.",
+      "searchPlaceholder": "A word or part of a word",
+      "sender": "Sender {{code}}"
+    },
+    "export": {
+      "button": "Export CSV",
+      "instrument": "Questionnaire",
+      "format": "File format",
+      "r": "R, SPSS, pandas",
+      "excel": "Excel",
+      "rHint": "Commas, decimal point, UTF-8",
+      "excelHint": "Semicolons, decimal comma, opens correctly in Excel",
+      "download": "Download",
+      "pseudonymised": "The file contains codes instead of names.",
+      "freeText": "The messages are free text and can contain personal data that people wrote themselves."
     }
   },
   "notFound": {

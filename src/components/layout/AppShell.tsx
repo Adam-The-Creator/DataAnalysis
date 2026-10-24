@@ -11,7 +11,7 @@ import { cn } from '@/lib/cn'
 
 interface NavItem {
   to: string
-  key: 'dashboard' | 'sessions' | 'participants' | 'compare' | 'reports' | 'roadmap' | 'myRecords'
+  key: 'dashboard' | 'sessions' | 'participants' | 'compare' | 'reports' | 'roadmap' | 'myRecords' | 'feedback' | 'adminUsage' | 'adminFeedback'
   end?: boolean
   phase?: Phase // shown for screens that are only a placeholder so far
 }
@@ -22,10 +22,26 @@ const psychologistNav: NavItem[] = [
   { to: '/participants', key: 'participants' },
   { to: '/compare', key: 'compare' },
   { to: '/reports', key: 'reports' },
+  { to: '/feedback', key: 'feedback' },
   { to: '/roadmap', key: 'roadmap' },
 ]
 
-const playerNav: NavItem[] = [{ to: '/my', key: 'myRecords' }]
+const playerNav: NavItem[] = [
+  { to: '/my', key: 'myRecords' },
+  { to: '/feedback', key: 'feedback' },
+]
+
+// The admin sees the usage numbers and the feedback, nothing else (requirement ACC-03)
+const adminNav: NavItem[] = [
+  { to: '/admin', key: 'adminUsage', end: true },
+  { to: '/admin/feedback', key: 'adminFeedback' },
+]
+
+const roleBadge = {
+  [Role.Psychologist]: { tone: 'indigo', label: 'roles.psychologist' },
+  [Role.Admin]: { tone: 'amber', label: 'roles.admin' },
+  [Role.Player]: { tone: 'slate', label: 'roles.player' },
+} as const
 
 function ModeBadge() {
   const { t } = useTranslation()
@@ -38,7 +54,8 @@ function ModeBadge() {
 export function AppShell() {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
-  const nav = user?.role === Role.Psychologist ? psychologistNav : playerNav
+  const nav = user?.role === Role.Psychologist ? psychologistNav : user?.role === Role.Admin ? adminNav : playerNav
+  const badge = roleBadge[user?.role === Role.Psychologist || user?.role === Role.Admin ? user.role : Role.Player]
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
@@ -72,9 +89,7 @@ export function AppShell() {
           <div className="flex items-center gap-3 text-sm">
             <span className="text-slate-600">
               {user?.name}{' '}
-              <Badge tone={user?.role === Role.Psychologist ? 'indigo' : 'slate'}>
-                {t(user?.role === Role.Psychologist ? 'roles.psychologist' : 'roles.player')}
-              </Badge>
+              <Badge tone={badge.tone}>{t(badge.label)}</Badge>
             </span>
             <Button variant="secondary" onClick={logout}>{t('auth.logout')}</Button>
           </div>

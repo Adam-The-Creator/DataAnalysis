@@ -81,6 +81,7 @@ export function buildDrawingReport(
     [t('report.info.gender'), player?.gender ?? none()],
     [t('report.info.dominantHand'), player?.dominantHand ?? none()],
     [t('report.info.session'), session?.name ?? drawing.metadata.sessionID],
+    [t('report.info.sessionDescription'), session?.description || none()],
     [t('report.info.gameType'), gameTypeLabel(t, drawing.metadata.gameType)],
     [t('report.info.date'), formatDateTime(drawing.metadata.date)],
   ]

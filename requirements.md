@@ -75,13 +75,15 @@ usage numbers, the questionnaire results and the messages. In this document
   that way.
 - `[DECISION]` SC-08: P3 (feedback and admin) may change the server in exactly
   these additive ways, and in no other: (a) new SQLite tables for the
-  questionnaire submissions and the feedback messages, created with `CREATE
-  TABLE IF NOT EXISTS` like `ActiveSession`; (b) a new value of the existing
-  `Players.Role` integer column for the admin (no schema change); (c) a check
-  in `/auth/signup` that rejects every role except Player and Psychologist;
-  (d) request throttling for the whole API (SEC-02, SEC-03). The existing
-  tables, the MongoDB document and the other routers stay as they are. The
-  deployed server exe has to be rebuilt.
+  questionnaire submissions, the feedback messages and the pseudonym codes,
+  created with `CREATE TABLE IF NOT EXISTS` like `ActiveSession`; (b) a new
+  value of the existing `Players.Role` integer column for the admin (no schema
+  change), and the rule that an admin token only opens the admin endpoints and
+  the admin's own role and info; (c) a check in `/auth/signup` that rejects
+  every role except Player and Psychologist; (d) request throttling for the
+  whole API (SEC-02, SEC-03). The existing tables, the MongoDB document and
+  the other routers stay as they are. The deployed server exe has to be
+  rebuilt.
 - `[DECISION]` SC-09: Feedback is pseudonymous for the admin. The database keeps
   the account ID with every submission (needed for the send limits and for the
   user's own history), but the admin API and screens never return the username,
@@ -156,7 +158,9 @@ usage numbers, the questionnaire results and the messages. In this document
   endpoints: create, edit, close, delete, activate. The server rules are
   shown as readable messages (the default session cannot be closed, a closed
   session cannot be activated, a session with drawings or an active room
-  cannot be deleted). The active session is clearly marked.
+  cannot be deleted). The active session is clearly marked. Making a session
+  active asks first, like closing and deleting do, because it sends the new
+  drawings of every player into that session (SC-04).
 
 ### Drawings
 
@@ -176,7 +180,13 @@ usage numbers, the questionnaire results and the messages. In this document
 - `[REQUIREMENT]` DRW-05 (P2): Replay: strokes appear in the order and timing
   they were drawn, with play/pause, speed and a scrubber. Optionally with the
   head and hand paths. Uses `utcMs` when available and the legacy timestamp
-  otherwise (only time differences are meaningful there).
+  otherwise (only time differences are meaningful there). An erased stroke is
+  there from the moment it was drawn until the moment it was erased (the erase
+  or undo in its history; when that is missing, until it is finished). With
+  "erased strokes" off it is gone after that, so the replay shows the whole
+  drawing process. With "erased strokes" on it stays after that as the dimmed
+  stroke the static view shows for erased strokes. The replay lasts until the
+  last erasing.
 - `[REQUIREMENT]` DRW-06 (P2): 3D heatmap (voxel density) and top, front and
   side density projections, relative to the figure position when known.
 - `[REQUIREMENT]` DRW-07 (P2): Behaviour timeline: strokes, erase and undo,
@@ -263,7 +273,7 @@ collaborator list of a drawing is not reliably filled by the game.
   order and polarity. The six scale means (attractiveness, perspicuity,
   efficiency, dependability, stimulation, novelty; range -3 to +3) are
   computed on the server from the raw answers. The short version UEQ-S (8
-  items) is an open point.
+  items) is not used: the full questionnaire was chosen.
 - `[REQUIREMENT]` FBK-12 (P3): Answers are stored as item ID and number, never as
   text, so they do not depend on the language. The item texts come from the
   translation resources (SC-05); official translations of SUS and UEQ are used
@@ -295,11 +305,16 @@ collaborator list of a drawing is not reliably filled by the game.
 
 - `[REQUIREMENT]` ADM-01 (P3): The admin is a role of its own (value 2 of the
   role). It is not a psychologist and does not inherit psychologist rights. A
-  new server side check (`require_admin`) guards the admin endpoints (ACC-03).
+  new server side check (`require_admin`) guards the admin endpoints (ACC-03),
+  and every other endpoint refuses an admin token (403), except the admin's
+  own role and info, which the login needs. So the admin cannot use the game.
 - `[REQUIREMENT]` ADM-02 (P3): The admin account is created on the server, never
-  in the game or the web app: by a command run on the server PC. It can be run
-  again without harm, takes username and password from its prompt or from
-  environment variables, and prints or stores no secret.
+  in the game or the web app: by `server.py --create-admin NAME`, a command run
+  on the server PC (it also works in the packaged exe). It can be run again
+  without harm (then it sets a new password), never converts an account of
+  another role, takes the password from the environment variable
+  `ADMIN_PASSWORD` or asks for it (at least 10 characters), and prints or
+  stores no secret.
 - `[REQUIREMENT]` ADM-03 (P3): `/auth/signup` rejects every role except Player and
   Psychologist (SC-08c), so nobody can register as admin. The existing,
   accepted gap that anybody can register as psychologist is not part of this
@@ -338,9 +353,11 @@ collaborator list of a drawing is not reliably filled by the game.
   pagination. The admin can mark a message read or unread and delete it (with
   confirmation). New messages are unread.
 - `[REQUIREMENT]` ADM-12 (P3): The pseudonym code is stable (the same account
-  always has the same code) and is derived on the server with a key that
-  survives restarts (not the ephemeral JWT secret). The admin never sees
-  username, real name, account ID or IP address (SC-09).
+  always has the same code). It is a random code that the server gives the
+  account the first time it sends something and keeps in a small table, so
+  there is no key to configure or to lose, and it survives restarts and
+  backups together with the database. The admin never sees username, real
+  name, account ID or IP address (SC-09).
 - `[REQUIREMENT]` ADM-13 (P3): CSV export of the questionnaire answers and scores
   and of the messages (pseudonymised), in the two dialects of P2-05. Cells
   that start with `=`, `+`, `-` or `@` are neutralised against CSV injection.
@@ -468,7 +485,8 @@ Threats and countermeasures at a glance:
   no external resources (no CDN), with an interactive 3D view (embedded
   viewer and decimated geometry) and static snapshot images. It works offline
   and prints well (print stylesheet, PDF through the browser).
-- `[REQUIREMENT]` REP-03 (MVP): Report content: session info, player info, game
+- `[REQUIREMENT]` REP-03 (MVP): Report content: session info (the name and the
+  description of the session, also in a drawing report), player info, game
   type, metrics grouped with their definitions, colour palette, charts, 3D
   view, data quality flags, AI section (when enabled, clearly labelled),
   generation time, analyzer version, and a note on how to interpret the
@@ -615,15 +633,17 @@ Functions:
   definitions, send a questionnaire, send a message, own submissions) and one
   for the admin (usage, results, messages, export). The new tables are created
   at start. Nothing else changes except what SC-08 lists. The game is not
-  touched: it only checks for the Psychologist role, so an admin who logs in
-  there is treated like a player (to verify, see the open points).
+  touched. It only checks for the Psychologist role, but the server refuses an
+  admin token everywhere except the admin endpoints (ADM-01), so an admin who
+  logs in there cannot do anything.
 - `[REQUIREMENT]` TEC-14 (P3): Stored per questionnaire submission: ID, the ID
   generated by the client (unique), account ID, role and age band at the time,
   target, instrument and version, the answers (item ID to value), the computed
   scores and the creation time. Per message: ID, the ID generated by the
   client, account ID, role and age band, target, category, text, creation time
-  and read flag. Indexes serve the limit queries (account, type, time). Raw
-  answers are kept, so scores can be recomputed if the scoring changes.
+  and read flag. Per account that sent something: the pseudonym code (ADM-12).
+  Indexes serve the limit queries (account, type, time). Raw answers are kept,
+  so scores can be recomputed if the scoring changes.
 - `[REQUIREMENT]` TEC-15 (P3): One versioned instrument definition on the server
   (items, scales, polarity, scoring) is used for both validation and scoring.
   The item texts live in the translations of the web app, keyed by item ID.
@@ -782,21 +802,26 @@ here for a later update.
 - Phase 3: do players, and children in particular, use the web app at all? If
   not, the feedback page reaches few of them and FUT-17 (in the game) becomes
   important. Should players also rate the player view of the web app?
-- Phase 3: UEQ in full (26 items) or the short UEQ-S (8 items)? A psychologist
-  rates two targets, which is 72 items with SUS and UEQ, so they could be
-  offered separately. (FBK-11)
-- Phase 3: the SMILEY questions, the age limit of 12 and the handling of an
-  unknown age. (FBK-14)
-- Phase 3: official Hungarian versions of SUS and UEQ, their terms of use and
-  the UEQ benchmark data. (FBK-12, FBK-13)
-- Phase 3: how the trusted proxy (ngrok) is configured so that the real client
-  IP is known. (SEC-02)
-- Phase 3: where the pseudonym key is configured and how it is backed up, as a
-  lost key changes all codes. (ADM-12)
-- Phase 3: only the Psychologist check of the lobby in the game was verified for
-  the new Admin value. The other uses of the role (login screen, database
-  manager) are not checked, and neither is whether the admin may log in to the
-  game at all. The `Role` enum of the game (`Role.cs`) mirrors the server and
-  would optionally get the new value. (TEC-13)
+- Phase 3: the full UEQ has 26 items, so a psychologist who rates two targets
+  answers 72 items with SUS. They are offered one at a time, but a shorter
+  way (UEQ-S) can still be added later. (FBK-11)
+- Phase 3: the SMILEY questions (four, written as a proposal), the age limit of
+  12 and the handling of an unknown age (it gets SUS and UEQ). (FBK-14)
+- Phase 3: the English wording and the scale assignment of SUS and UEQ were
+  written from the published instruments and have to be compared with the
+  official handbooks and the official Hungarian versions, together with their
+  terms of use and the UEQ benchmark data, before the study. (FBK-12, FBK-13)
+- Phase 3: the server believes the `X-Forwarded-For` header only from the
+  proxies in `TRUSTED_PROXIES` (config.py, the PC itself by default, which is
+  where ngrok runs). A tunnel on another machine has to be added there.
+  (SEC-02)
+- Phase 3: the Unity game was not changed and not run with the admin account.
+  The server refuses an admin token outside the admin endpoints, so an admin
+  cannot play. The `Role` enum of the game (`Role.cs`) does not know the value
+  2; adding it is optional. (TEC-13)
+- Phase 3: a report is stale when the drawing changed, but not when only the
+  name or the description of its session changed (the fingerprint of a drawing
+  report does not include the session). The report can be regenerated by hand.
+  (REP-04)
 - Phase 3: data protection for submissions of minors (consent of the study,
   retention). See FUT-07 and FUT-19.

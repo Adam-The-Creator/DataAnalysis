@@ -5,8 +5,11 @@ import { AuthProvider } from '@/auth/AuthProvider'
 import { RequireAuth, RequireRole } from '@/auth/guards'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoadingBlock } from '@/components/ui/states'
+import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage'
+import { AdminFeedbackPage } from '@/features/admin/AdminFeedbackPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RoleHome } from '@/features/dashboard/RoleHome'
+import { FeedbackPage } from '@/features/feedback/FeedbackPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { ParticipantPage } from '@/features/participants/ParticipantPage'
 import { ParticipantsPage } from '@/features/participants/ParticipantsPage'
@@ -51,6 +54,17 @@ export default function App() {
                   <Route element={<RequireRole role="player" />}>
                     <Route path="my" element={<PlayerHomePage />} />
                     <Route path="my/drawings/:drawingId" element={<DrawingPage />} />
+                  </Route>
+
+                  {/* Players and psychologists: questionnaires and messages (requirement FBK-01) */}
+                  <Route element={<RequireRole role={['player', 'psychologist']} />}>
+                    <Route path="feedback" element={<FeedbackPage />} />
+                  </Route>
+
+                  {/* The admin: usage numbers, questionnaire results and messages, nothing else (requirement ACC-03) */}
+                  <Route element={<RequireRole role="admin" />}>
+                    <Route path="admin" element={<AdminDashboardPage />} />
+                    <Route path="admin/feedback" element={<AdminFeedbackPage />} />
                   </Route>
 
                   <Route path="*" element={<NotFoundPage />} />

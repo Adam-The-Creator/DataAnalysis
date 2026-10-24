@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getApi } from '.'
-import type { CohortFilters, ReportKind, SessionInput } from './types'
+import type {
+  CohortFilters, MessageFilters, MessageInput, QuestionnaireInput, ReportKind, ResultFilters, SessionInput,
+} from './types'
 
 /** Query hooks: the only place where screens talk to the API. Each one is a thin wrapper around getApi(). */
 
@@ -218,4 +220,73 @@ export function useDeleteReport() {
     mutationFn: (reportId: string) => getApi().analysis.deleteReport(reportId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['reports'] }),
   })
+}
+
+// --- Feedback and questionnaires (requirements FBK-*) ---
+
+/** The questionnaires: the version, the scale and the item IDs. They only change with a new version of the server. */
+export const useInstruments = () =>
+  useQuery({ queryKey: ['feedback', 'instruments'], queryFn: () => getApi().feedback.instruments(), staleTime: Infinity })
+
+export const useMySubmissions = (limit: number, offset: number) =>
+  useQuery({
+    queryKey: ['feedback', 'mine', limit, offset],
+    queryFn: () => getApi().feedback.mine(limit, offset),
+    placeholderData: (previous) => previous,
+  })
+
+export function useSendQuestionnaire() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: QuestionnaireInput) => getApi().feedback.sendQuestionnaire(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feedback', 'mine'] }),
+  })
+}
+
+export function useSendMessage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: MessageInput) => getApi().feedback.sendMessage(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feedback', 'mine'] }),
+  })
+}
+
+// --- Admin dashboard (requirements ADM-*) ---
+
+export const useUsage = () => useQuery({ queryKey: ['admin', 'usage'], queryFn: () => getApi().admin.usage() })
+
+export const useQuestionnaireResults = (filters: ResultFilters) =>
+  useQuery({
+    queryKey: ['admin', 'results', filters],
+    queryFn: () => getApi().admin.questionnaireResults(filters),
+    placeholderData: (previous) => previous,
+  })
+
+export const useAdminMessages = (filters: MessageFilters, limit: number, offset: number) =>
+  useQuery({
+    queryKey: ['admin', 'messages', filters, limit, offset],
+    queryFn: () => getApi().admin.messages(filters, limit, offset),
+    placeholderData: (previous) => previous,
+  })
+
+/** Marking a message read or deleting it changes the list and the numbers on the dashboard. */
+function useInvalidateMessages() {
+  const queryClient = useQueryClient()
+  return () => Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['admin', 'messages'] }),
+    queryClient.invalidateQueries({ queryKey: ['admin', 'usage'] }),
+  ])
+}
+
+export function useSetMessageRead() {
+  const invalidate = useInvalidateMessages()
+  return useMutation({
+    mutationFn: (args: { messageId: string; read: boolean }) => getApi().admin.setMessageRead(args.messageId, args.read),
+    onSuccess: invalidate,
+  })
+}
+
+export function useDeleteMessage() {
+  const invalidate = useInvalidateMessages()
+  return useMutation({ mutationFn: (messageId: string) => getApi().admin.deleteMessage(messageId), onSuccess: invalidate })
 }

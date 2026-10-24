@@ -90,6 +90,9 @@ export function LoginPage() {
             <Button variant="secondary" className="w-full" disabled={busy} onClick={() => void submit('player', 'demo')}>
               {t('auth.demoPlayer')}
             </Button>
+            <Button variant="secondary" className="w-full" disabled={busy} onClick={() => void submit('admin', 'demo')}>
+              {t('auth.demoAdmin')}
+            </Button>
           </div>
         ) : (
           <form className="mt-5 space-y-4" onSubmit={onSubmit}>

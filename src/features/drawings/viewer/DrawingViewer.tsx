@@ -11,7 +11,7 @@ import { authorColor, hexToLinear } from '@/lib/authorColors'
 import { cn } from '@/lib/cn'
 import { downloadBlob } from '@/lib/download'
 import { formatNumber } from '@/lib/format'
-import { canReplay, strokesBounds, toViewerStrokes, type ViewerStroke } from '@/lib/strokes'
+import { canReplay, strokesBounds, strokeSpan, toViewerStrokes, type ViewerStroke } from '@/lib/strokes'
 import type { CameraSync } from './cameraSync'
 import { DETAIL_LEVELS, type DetailLevel } from './detail'
 import { ReplayBar } from './ReplayBar'
@@ -61,6 +61,7 @@ function Scene(props: {
   dark: boolean
   view: ViewRequest
   time: number | null
+  showErased: boolean
   showStrokes: boolean
   geometry: DrawingGeometry
   layers: Layers
@@ -89,6 +90,7 @@ function Scene(props: {
           thickness={props.thickness}
           selected={stroke.id === props.selectedId}
           time={props.time}
+          showErased={props.showErased}
           onSelect={props.onSelect}
         />
       ))}
@@ -136,15 +138,26 @@ export function DrawingViewer({
   // The camera frames the whole drawing, whatever the filters hide
   const bounds = useMemo(() => strokesBounds(baseStrokes), [baseStrokes])
   const erasedCount = strokes.filter((s) => s.erased).length
-  const visible = useMemo(
-    () => strokes.filter((s) => (showErased || !s.erased) && !hiddenAuthors.includes(s.authorId) && (hand === 'both' || s.hand === hand)),
+  const time = replay.active ? replay.time : null
+  const replaying = time !== null
+  const matchesFilters = (s: ViewerStroke) => !hiddenAuthors.includes(s.authorId) && (hand === 'both' || s.hand === hand)
+  // The strokes the static view shows
+  const shown = useMemo(
+    () => strokes.filter((s) => (showErased || !s.erased) && matchesFilters(s)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [strokes, showErased, hiddenAuthors, hand],
+  )
+  // During a replay an erased stroke is there from when it was drawn until it was erased, whether or not erased
+  // strokes are shown (StrokeLine decides what is visible at the moment), so the strokes with time data are included.
+  const visible = useMemo(
+    () => (replaying ? strokes.filter((s) => matchesFilters(s) && (showErased || !s.erased || strokeSpan(s) !== null)) : shown),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [strokes, shown, replaying, showErased, hiddenAuthors, hand],
   )
   const selected = strokes.find((s) => s.id === selectedId) ?? null
 
   const heatmap = useHeatmap(drawingId, voxelSize, analysisLayers && layers.heatmap)
   const tracking = useTracking(drawingId, analysisLayers && layers.tracking)
-  const time = replay.active ? replay.time : null
 
   async function takeSnapshot() {
     const blob = await snapshot.current?.()
@@ -162,7 +175,7 @@ export function DrawingViewer({
   return (
     <Card
       title={title ?? t('viewer.title')}
-      subtitle={t('viewer.shown', { shown: visible.length, total: strokes.length })}
+      subtitle={t('viewer.shown', { shown: shown.length, total: strokes.length })}
       actions={
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           {presets.map((preset) => (
@@ -192,7 +205,7 @@ export function DrawingViewer({
           >
             <Scene
               strokes={visible} bounds={bounds} selectedId={selectedId} thickness={thickness} dark={dark} view={view}
-              time={time} showStrokes geometry={geometry} layers={layers}
+              time={time} showErased={showErased} showStrokes geometry={geometry} layers={layers}
               heatmap={heatmap.data} tracking={tracking.data} sync={sync} onSelect={onSelect} registerSnapshot={registerSnapshot}
             />
           </Canvas>

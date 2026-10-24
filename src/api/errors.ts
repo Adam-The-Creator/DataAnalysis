@@ -31,6 +31,8 @@ export type FeatureId =
   | 'cohort'
   | 'history'
   | 'export'
+  | 'feedback'
+  | 'admin'
 
 /**
  * A feature that needs a part of the server that does not exist yet (mostly the analysis module, TEC-02).

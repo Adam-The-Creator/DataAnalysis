@@ -12,14 +12,18 @@ export function RequireAuth() {
   return <Outlet />
 }
 
+export type AppRole = 'psychologist' | 'player' | 'admin'
+
+const roleValue = { psychologist: Role.Psychologist, player: Role.Player, admin: Role.Admin } as const
+
 /**
- * Restricts a group of routes to one role. The UI only mirrors the rights: the server decides
+ * Restricts a group of routes to one role, or to several. The UI only mirrors the rights: the server decides
  * (requirement AUTH-04).
  */
-export function RequireRole({ role }: { role: 'psychologist' | 'player' }) {
+export function RequireRole({ role }: { role: AppRole | AppRole[] }) {
   const { user } = useAuth()
-  const wanted = role === 'psychologist' ? Role.Psychologist : Role.Player
-  if (user && user.role !== wanted) {
+  const allowed = (Array.isArray(role) ? role : [role]).map((r) => roleValue[r]) as number[]
+  if (user && !allowed.includes(user.role)) {
     return <Navigate to="/" replace />
   }
   return <Outlet />

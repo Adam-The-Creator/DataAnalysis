@@ -7,7 +7,7 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js'
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js'
 import type { HeatmapData, PlacedModel, TrackedPlayer } from '@/api/types'
 import { heatColor, voxelCenter } from '@/lib/heat'
-import { replayPhase, sliceStroke, type Bounds, type ViewerStroke } from '@/lib/strokes'
+import { replayLook, sliceStroke, type Bounds, type ViewerStroke } from '@/lib/strokes'
 import { positionAt } from '@/lib/trackPath'
 import type { CameraPose, CameraSync } from './cameraSync'
 
@@ -30,21 +30,25 @@ const HIGHLIGHT_COLOR = 0xf59e0b
 
 // --- Strokes ---
 
-export function StrokeLine({ stroke, thickness, selected, time, onSelect }: {
+export function StrokeLine({ stroke, thickness, selected, time, showErased, onSelect }: {
   stroke: ViewerStroke
   thickness: number
   selected: boolean
   /** Replay time in ms on the drawing's time axis, or null to show the whole stroke. */
   time: number | null
+  /** Whether erased strokes are shown: after the replay erased one it stays as a dimmed ghost, otherwise it is gone. */
+  showErased: boolean
   onSelect: (id: string) => void
 }) {
   const size = useThree((state) => state.size)
-  const phase = replayPhase(stroke, time)
+  const look = replayLook(stroke, time, showErased)
+  const part = look.visible ? look.part : null
+  const ghost = look.visible && look.ghost
   // Only a stroke that is being drawn right now changes with the clock, a finished one keeps its geometry
-  const partialTime = phase === 'partial' ? time : null
+  const partialTime = part === 'partial' ? time : null
 
   const built = useMemo(() => {
-    const shown = phase === 'full' ? stroke : phase === 'partial' && partialTime !== null ? sliceStroke(stroke, partialTime) : null
+    const shown = part === 'whole' ? stroke : part === 'partial' && partialTime !== null ? sliceStroke(stroke, partialTime) : null
     if (!shown) return null
 
     const geometry = new LineGeometry()
@@ -56,8 +60,8 @@ export function StrokeLine({ stroke, thickness, selected, time, onSelect }: {
       vertexColors: true,
       worldUnits: true,
       linewidth: width,
-      transparent: stroke.erased,
-      opacity: stroke.erased ? 0.3 : 1,
+      transparent: ghost,
+      opacity: ghost ? 0.3 : 1,
     })
     material.resolution.set(size.width, size.height)
 
@@ -69,7 +73,7 @@ export function StrokeLine({ stroke, thickness, selected, time, onSelect }: {
       highlight.renderOrder = -1
     }
     return { line: new Line2(geometry, material), highlight }
-  }, [stroke, thickness, selected, size, phase, partialTime])
+  }, [stroke, thickness, selected, size, part, ghost, partialTime])
 
   useEffect(
     () => () => {
