@@ -22,6 +22,27 @@ export function formatLegacyTimestamp(ms: number): string {
   )
 }
 
+/** The time of a point: its UTC time when it has one, the legacy stamp otherwise. */
+export function pointTime(point: Point): number | null {
+  return point.utcMs ?? legacyTimestampMs(point.timestamp)
+}
+
+/**
+ * UTC minus legacy stamp, from the first point that has both. The line history only has the legacy stamp, so this
+ * puts it on the same axis as the points and the events.
+ */
+export function legacyOffsetMs(lines: { points: Point[] }[]): number | null {
+  for (const line of lines) {
+    for (const point of line.points) {
+      if (point.utcMs != null) {
+        const legacy = legacyTimestampMs(point.timestamp)
+        if (legacy != null) return point.utcMs - legacy
+      }
+    }
+  }
+  return null
+}
+
 /** Start and end of a stroke in milliseconds: the UTC times when present, the legacy stamps otherwise. */
 export function strokeTimes(points: Point[]): { start: number; end: number } | null {
   const first = points[0]

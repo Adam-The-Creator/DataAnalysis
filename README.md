@@ -5,7 +5,7 @@ Data Analysis Web Application for VRMultiplayer.
 Psychologists use it to see the sessions and drawings made in the VR art therapy game, and to analyze them on
 session level and on drawing level. Players see their own records. What it has to do, and in which phase, is
 written in [requirements.md](requirements.md). The **Roadmap** page of the app shows where every requirement
-stands in the current prototype.
+stands.
 
 ## Run it
 
@@ -25,51 +25,76 @@ The login page switches between two data sources (the default comes from `.env.e
 
 | Mode | What it is |
 | ---- | ---------- |
-| **Demo data** | Generated sample sessions and drawings, and a stand-in for the analysis module. No server needed. Use the two buttons to enter as a psychologist or as a player. |
+| **Demo data** | Generated sample sessions and drawings (with tracking, events, placed models, several sessions over time), and a stand-in for the analysis module. No server needed. Use the two buttons to enter as a psychologist or as a player. |
 | **Live server** | The real DatabaseServer (default `http://127.0.0.1:8000`, can be changed on the login page). Log in with a psychologist or player account of the game. |
 
 The dev server uses port 3000 because that is the origin the DatabaseServer already allows (its `config.py`
-CORS list). Nothing has to be changed on the server for the live mode.
+CORS list).
 
-### What works against the live server today
+### What the live server needs
 
-The server side analysis module (requirements TEC-02) does not exist yet. In live mode everything that
-only needs the existing endpoints works: login, dashboard numbers, sessions, participants, the 3D viewer, the
-player view. Everything that needs the analysis module (metrics, session statistics, thumbnails, reports,
-drawings over time, recent drawings) shows a **"Not implemented yet"** panel that names the missing requirement.
-Demo mode shows how those screens will look.
+The analysis (metrics, statistics, replay data, timeline, heatmap, comparison, reports, export, ...) is done by the
+**analysis module of the DatabaseServer** (`DatabaseServer/analysis`, see its README). A server build that has it
+makes everything work. A server **without** it (an older build, for example a deployed exe that has not been rebuilt)
+still works for what the older endpoints can give: login, sessions, session management, participants and the 3D
+viewer (from the whole stored drawing). Everything else shows a "Not implemented yet" panel instead of failing.
+
+## What it does
+
+- **Dashboard and sessions:** numbers, charts, filters; create, edit, activate, close and delete sessions, with the
+  server's own messages when it refuses something.
+- **Drawing page:** 3D viewer with a detail level, filters, colour by author, replay, and layers for the heatmap,
+  the tracked head and hand movement and the placed models. Below it: behaviour timeline, authors and collaboration,
+  tracked movement, ink density, metrics with a template-based summary, data quality notes.
+- **Participants:** history across all sessions and trends of any metric.
+- **Compare:** two drawings side by side (cameras together, table of differences), a participant over time
+  (baseline against follow-up), and a drawing against a group (same game type, same session, any age range).
+- **Reports and export:** self-contained HTML reports of a drawing, a session or a participant (stored on the server and
+  reused while nothing changed), CSV of a session (R/SPSS or Excel), raw JSON, glTF/OBJ/PLY, PNG snapshot.
+- **Player view:** a player's own info, sessions and drawings, with the viewer and the replay.
 
 ## Structure
 
 ```text
 src/
   api/             The only code that talks to a backend
-    contract.ts      Interface of everything the UI needs (the analysis part is the future server API)
-    live.ts          Client of the DatabaseServer, throws NotImplementedError where the server cannot answer
-    mock/            Demo client: generated world, stand-in analysis engine and report builder
+    contract.ts      Interface of everything the UI needs
+    live.ts          Client of the DatabaseServer, with fallbacks for a server without the analysis module
+    mock/            Demo client: generated world, stand-ins of the server's analyses, report builders
     hooks.ts         TanStack Query hooks, the only place where screens fetch data
     types.ts         Data shapes (server models + analysis contract)
   auth/            Login state, in-memory token, route guards by role
-  components/      layout (shell), ui (cards, states, ...), charts (small SVG components)
-  features/        One folder per screen: dashboard, sessions, drawings (3D viewer), reports,
-                   participants, compare, player, roadmap (+ the requirement registry)
-  lib/             Pure helpers: strokes, metric catalogue, formatting, geometry, SVG snapshots
+  components/      layout (shell), ui (cards, dialogs, states, ...), charts (small SVG components)
+  features/        One folder per screen: dashboard, sessions, drawings (3D viewer, panels), participants,
+                   compare, reports, export, player, roadmap (+ the requirement registry)
+  lib/             Pure helpers: strokes, time axis, metric catalogue, formatting, geometry, SVG snapshots
   i18n/            Translations: every user-visible text, typed keys (English now, Hungarian later)
 ```
 
 Key ideas:
 
 - **One contract, two backends.** Screens only use `getApi()` through the hooks. Switching between demo and live
-  changes nothing in the screens. When the server's analysis module is built, only `live.ts` changes.
-- **Gaps stay visible.** A missing server feature throws `NotImplementedError`, and the UI shows a panel with the
-  requirement ids instead of an empty page or a fake value.
-- **Temporary shortcuts are marked** with `TEMPORARY` in the code (for example the dashboard overview that is
-  composed on the client from several requests, which the analysis API will return in one call).
+  changes nothing in the screens.
+- **The server is the reference.** The demo mode's stand-ins (`api/mock/analysisEngine.ts`, `analytics.ts`,
+  `exports.ts`) are ports of the server module and are kept in step with it. They were compared with it on the same
+  drawings, with identical results.
+- **Gaps stay visible.** A feature the server cannot answer shows a panel that says so, never an empty page or a fake
+  value. A metric that cannot be computed shows "n/a" with the reason.
+- **Time.** Every time in an analysis answer is on the drawing's time axis. A break of more than 30 minutes between two
+  strokes (the drawing was continued later) is cut down to 5 seconds there.
 - **The token lives in memory only.** A page reload needs a new login (requirement AUTH-02).
 - **No database model changes** are needed or assumed (requirement SC-02). Ideas that would need them are in the
   "Future improvements" section of requirements.md.
 
+## Tests
+
+The server's analysis module has a unit test suite in the DatabaseServer repository
+(`python -m unittest discover -s tests -t .`). This repository has no test runner yet (requirement TEC-11, partly
+done): the screens were checked with throw-away scripts that run the whole app in jsdom against the demo data, against a
+stub of an older server and against the real server. Their gaps: no real WebGL, so the 3D rendering itself, the camera
+sync and the PNG snapshot are only checked as far as their math and objects go.
+
 ## Not done yet
 
-See the Roadmap page. The main gaps: the server side analysis module itself, tests, replay and heatmaps, comparison,
-session management, export, and everything AI related (phase 3).
+Everything AI related (phase 3), background jobs for report generation, server side pagination of the lists, and a test
+runner in this repository. See the Roadmap page.

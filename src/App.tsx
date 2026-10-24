@@ -6,9 +6,9 @@ import { RequireAuth, RequireRole } from '@/auth/guards'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoadingBlock } from '@/components/ui/states'
 import { LoginPage } from '@/features/auth/LoginPage'
-import { ComparePage } from '@/features/compare/ComparePage'
 import { RoleHome } from '@/features/dashboard/RoleHome'
 import { NotFoundPage } from '@/features/NotFoundPage'
+import { ParticipantPage } from '@/features/participants/ParticipantPage'
 import { ParticipantsPage } from '@/features/participants/ParticipantsPage'
 import { PlayerHomePage } from '@/features/player/PlayerHomePage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
@@ -17,8 +17,9 @@ import { SessionDetailPage } from '@/features/sessions/SessionDetailPage'
 import { SessionsPage } from '@/features/sessions/SessionsPage'
 import { queryClient } from '@/queryClient'
 
-// The drawing page pulls in three.js (most of the bundle), so it is loaded when it is first opened.
+// The pages with the 3D viewer pull in three.js (most of the bundle), so they are loaded when first opened.
 const DrawingPage = lazy(() => import('@/features/drawings/DrawingPage').then((m) => ({ default: m.DrawingPage })))
+const ComparePage = lazy(() => import('@/features/compare/ComparePage').then((m) => ({ default: m.ComparePage })))
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
                     <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
                     <Route path="drawings/:drawingId" element={<DrawingPage />} />
                     <Route path="participants" element={<ParticipantsPage />} />
+                    <Route path="participants/:playerId" element={<ParticipantPage />} />
                     <Route path="compare" element={<ComparePage />} />
                     <Route path="reports" element={<ReportsPage />} />
                     <Route path="roadmap" element={<RoadmapPage />} />

@@ -3,9 +3,9 @@
  * the big picture of the app stays in one place. Update it when a feature changes state.
  *
  * Status:
- *  - done:    works in demo and live mode
- *  - partial: works, but with a temporary shortcut or a part missing (see the notes in the code)
- *  - demo:    the screen exists and works on demo data; live mode shows "not implemented" (needs the server module)
+ *  - done:    works in demo mode and against the DatabaseServer's analysis module
+ *  - partial: works, with a part missing (see the notes in the code)
+ *  - demo:    the screen exists and works on demo data only (needs a server part that does not exist yet)
  *  - planned: not built yet
  */
 export type Phase = 'MVP' | 'P2' | 'P3'
@@ -15,26 +15,26 @@ const features = [
   // MVP
   ['AUTH-01', 'MVP', 'done'], ['AUTH-02', 'MVP', 'done'], ['AUTH-03', 'MVP', 'done'], ['AUTH-04', 'MVP', 'done'],
   ['ACC-01', 'MVP', 'done'], ['ACC-02', 'MVP', 'done'],
-  ['DASH-01', 'MVP', 'partial'], ['DASH-02', 'MVP', 'partial'], ['DASH-03', 'MVP', 'partial'],
-  ['SES-01', 'MVP', 'partial'], ['SES-02', 'MVP', 'partial'], ['SES-03', 'MVP', 'demo'], ['SES-04', 'MVP', 'demo'],
-  ['DRW-01', 'MVP', 'done'], ['DRW-02', 'MVP', 'done'], ['DRW-03', 'MVP', 'planned'], ['DRW-04', 'MVP', 'partial'],
-  ['PLY-01', 'MVP', 'partial'], ['PLY-02', 'MVP', 'done'], ['PLY-03', 'MVP', 'done'],
-  ['MET-01', 'MVP', 'demo'], ['MET-02', 'MVP', 'demo'], ['MET-03', 'MVP', 'planned'], ['MET-04', 'MVP', 'planned'],
-  ['MET-05', 'MVP', 'demo'], ['MET-06', 'MVP', 'demo'], ['MET-07', 'MVP', 'done'], ['MET-08', 'MVP', 'demo'],
-  ['REP-01', 'MVP', 'demo'], ['REP-02', 'MVP', 'partial'], ['REP-03', 'MVP', 'demo'], ['REP-04', 'MVP', 'demo'],
-  ['REP-05', 'MVP', 'demo'], ['REP-06', 'MVP', 'done'],
-  ['TEC-01', 'MVP', 'done'], ['TEC-02', 'MVP', 'planned'], ['TEC-03', 'MVP', 'planned'], ['TEC-04', 'MVP', 'planned'],
-  ['TEC-05', 'MVP', 'planned'], ['TEC-06', 'MVP', 'planned'], ['TEC-07', 'MVP', 'done'], ['TEC-08', 'MVP', 'partial'],
-  ['TEC-09', 'MVP', 'partial'], ['TEC-10', 'MVP', 'partial'], ['TEC-11', 'MVP', 'planned'], ['TEC-12', 'MVP', 'planned'],
+  ['DASH-01', 'MVP', 'done'], ['DASH-02', 'MVP', 'done'], ['DASH-03', 'MVP', 'done'],
+  ['SES-01', 'MVP', 'partial'], ['SES-02', 'MVP', 'done'], ['SES-03', 'MVP', 'done'], ['SES-04', 'MVP', 'done'],
+  ['DRW-01', 'MVP', 'done'], ['DRW-02', 'MVP', 'done'], ['DRW-03', 'MVP', 'done'], ['DRW-04', 'MVP', 'done'],
+  ['PLY-01', 'MVP', 'done'], ['PLY-02', 'MVP', 'done'], ['PLY-03', 'MVP', 'done'],
+  ['MET-01', 'MVP', 'done'], ['MET-02', 'MVP', 'done'], ['MET-03', 'MVP', 'partial'], ['MET-04', 'MVP', 'done'],
+  ['MET-05', 'MVP', 'done'], ['MET-06', 'MVP', 'done'], ['MET-07', 'MVP', 'done'], ['MET-08', 'MVP', 'done'],
+  ['REP-01', 'MVP', 'done'], ['REP-02', 'MVP', 'done'], ['REP-03', 'MVP', 'partial'], ['REP-04', 'MVP', 'done'],
+  ['REP-05', 'MVP', 'done'], ['REP-06', 'MVP', 'done'],
+  ['TEC-01', 'MVP', 'done'], ['TEC-02', 'MVP', 'done'], ['TEC-03', 'MVP', 'done'], ['TEC-04', 'MVP', 'done'],
+  ['TEC-05', 'MVP', 'planned'], ['TEC-06', 'MVP', 'partial'], ['TEC-07', 'MVP', 'done'], ['TEC-08', 'MVP', 'partial'],
+  ['TEC-09', 'MVP', 'done'], ['TEC-10', 'MVP', 'partial'], ['TEC-11', 'MVP', 'partial'], ['TEC-12', 'MVP', 'partial'],
   // P2
-  ['SES-05', 'P2', 'planned'],
-  ['DRW-05', 'P2', 'planned'], ['DRW-06', 'P2', 'planned'], ['DRW-07', 'P2', 'planned'], ['DRW-08', 'P2', 'planned'],
-  ['DRW-09', 'P2', 'planned'],
-  ['PAR-01', 'P2', 'partial'],
-  ['CMP-01', 'P2', 'planned'], ['CMP-02', 'P2', 'planned'], ['CMP-03', 'P2', 'planned'],
-  ['MUL-01', 'P2', 'planned'], ['MUL-02', 'P2', 'planned'], ['MUL-03', 'P2', 'planned'],
-  ['REP-07', 'P2', 'planned'], ['REP-08', 'P2', 'planned'],
-  ['EXP-01', 'P2', 'planned'], ['EXP-02', 'P2', 'planned'], ['EXP-03', 'P2', 'planned'], ['EXP-04', 'P2', 'planned'],
+  ['SES-05', 'P2', 'done'],
+  ['DRW-05', 'P2', 'done'], ['DRW-06', 'P2', 'done'], ['DRW-07', 'P2', 'done'], ['DRW-08', 'P2', 'done'],
+  ['DRW-09', 'P2', 'done'],
+  ['PAR-01', 'P2', 'done'],
+  ['CMP-01', 'P2', 'done'], ['CMP-02', 'P2', 'done'], ['CMP-03', 'P2', 'done'],
+  ['MUL-01', 'P2', 'done'], ['MUL-02', 'P2', 'done'], ['MUL-03', 'P2', 'done'],
+  ['REP-07', 'P2', 'done'], ['REP-08', 'P2', 'done'],
+  ['EXP-01', 'P2', 'done'], ['EXP-02', 'P2', 'done'], ['EXP-03', 'P2', 'done'], ['EXP-04', 'P2', 'done'],
   // P3
   ['AI-01', 'P3', 'planned'], ['AI-02', 'P3', 'planned'], ['AI-03', 'P3', 'planned'], ['AI-04', 'P3', 'planned'],
   ['AI-05', 'P3', 'planned'], ['AI-06', 'P3', 'planned'], ['AI-07', 'P3', 'planned'],

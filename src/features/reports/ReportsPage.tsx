@@ -44,7 +44,7 @@ export function ReportsPage() {
                     <tr key={report.id}>
                       <td className="px-4 py-3">
                         <Link
-                          to={report.kind === 'drawing' ? `/drawings/${report.targetId}` : `/sessions/${report.targetId}`}
+                          to={`/${{ drawing: 'drawings', session: 'sessions', participant: 'participants' }[report.kind]}/${report.targetId}`}
                           className="font-medium text-slate-900 hover:text-indigo-700"
                         >
                           {report.title}

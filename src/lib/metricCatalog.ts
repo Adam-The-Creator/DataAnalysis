@@ -30,6 +30,7 @@ export const metricCatalog: readonly MetricDef[] = [
   { id: 'meanStrokeLength', group: 'length', unit: 'm', decimals: 2 },
   { id: 'drawingSpan', group: 'time', unit: 's', decimals: 0 },
   { id: 'activeTime', group: 'time', unit: 's', decimals: 0 },
+  { id: 'idleTime', group: 'time', unit: 's', decimals: 0 },
   { id: 'meanSpeed', group: 'motion', unit: 'mps', decimals: 2 },
   { id: 'directionalChange', group: 'motion', unit: 'ratio', decimals: 3 },
   { id: 'meanPressure', group: 'motion', unit: 'ratio', decimals: 2 },
@@ -40,6 +41,8 @@ export const metricCatalog: readonly MetricDef[] = [
   { id: 'warmShare', group: 'colour', unit: 'percent', decimals: 0 },
   { id: 'distinctColours', group: 'colour', unit: 'count', decimals: 0 },
   { id: 'eraseRatio', group: 'behaviour', unit: 'percent', decimals: 0 },
+  { id: 'menuOpens', group: 'behaviour', unit: 'count', decimals: 0 },
+  { id: 'toolChanges', group: 'behaviour', unit: 'count', decimals: 0 },
 ]
 
 const byId = new Map(metricCatalog.map((def) => [def.id, def]))

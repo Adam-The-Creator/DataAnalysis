@@ -20,7 +20,7 @@ const psychologistNav: NavItem[] = [
   { to: '/', key: 'dashboard', end: true },
   { to: '/sessions', key: 'sessions' },
   { to: '/participants', key: 'participants' },
-  { to: '/compare', key: 'compare', phase: 'P2' },
+  { to: '/compare', key: 'compare' },
   { to: '/reports', key: 'reports' },
   { to: '/roadmap', key: 'roadmap' },
 ]

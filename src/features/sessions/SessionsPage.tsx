@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useActiveSessionId, useSessionSummaries } from '@/api/hooks'
 import type { SessionSummary } from '@/api/types'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Pagination } from '@/components/ui/Pagination'
@@ -11,6 +12,7 @@ import { EmptyState, QueryBoundary } from '@/components/ui/states'
 import { SessionStatusBadge } from '@/components/ui/StatusBadges'
 import { formatDateTime, parseServerDate, sessionStatus } from '@/lib/format'
 import { gameTypeLabel, knownGameTypes } from '@/lib/gameTypes'
+import { SessionFormDialog } from './SessionFormDialog'
 
 const PAGE_SIZE = 8
 
@@ -29,8 +31,10 @@ const sorters: Record<SortKey, (a: SessionSummary, b: SessionSummary) => number>
  */
 export function SessionsPage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const summaries = useSessionSummaries()
   const active = useActiveSessionId()
+  const [creating, setCreating] = useState(false)
 
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<'all' | 'open' | 'closed'>('all')
@@ -71,7 +75,12 @@ export function SessionsPage() {
 
   return (
     <>
-      <PageHeader title={t('sessions.title')} subtitle={t('sessions.subtitle')} />
+      <PageHeader
+        title={t('sessions.title')}
+        subtitle={t('sessions.subtitle')}
+        actions={<Button variant="primary" onClick={() => setCreating(true)}>{t('sessions.new')}</Button>}
+      />
+      <SessionFormDialog open={creating} onClose={() => setCreating(false)} onSaved={(s) => void navigate(`/sessions/${s.id}`)} />
 
       <Card className="mb-6">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">

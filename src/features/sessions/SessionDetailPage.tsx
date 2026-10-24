@@ -9,11 +9,12 @@ import { RangeBar } from '@/components/charts/RangeBar'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
-import { PlannedPanel } from '@/components/ui/PlannedPanel'
 import { EmptyState, QueryBoundary } from '@/components/ui/states'
 import { SessionStatusBadge } from '@/components/ui/StatusBadges'
 import { DrawingCard } from '@/features/drawings/DrawingCard'
+import { SessionCsvMenu } from '@/features/export/SessionCsvMenu'
 import { ReportButton } from '@/features/reports/ReportButton'
+import { SessionActions } from './SessionActions'
 import { displayName, formatDateTime, sessionStatus } from '@/lib/format'
 import { gameTypeLabel } from '@/lib/gameTypes'
 import { formatMetricValue, metricDef } from '@/lib/metricCatalog'
@@ -48,7 +49,13 @@ function SessionContent({ session }: { session: Session }) {
           </span>
         }
         subtitle={session.description ?? undefined}
-        actions={<ReportButton kind="session" targetId={session.id} />}
+        actions={
+          <>
+            <SessionActions session={session} status={status} />
+            <SessionCsvMenu sessionId={session.id} sessionName={session.name} />
+            <ReportButton kind="session" targetId={session.id} />
+          </>
+        }
       />
 
       <div className="space-y-6">
@@ -75,8 +82,6 @@ function SessionContent({ session }: { session: Session }) {
         <QueryBoundary query={drawings} isEmpty={(items) => items.length === 0} empty={<Card><EmptyState title={t('sessionDetail.noDrawings')} /></Card>}>
           {(metas) => <SessionBody session={session} metas={metas} />}
         </QueryBoundary>
-
-        <PlannedPanel ids={['SES-05']} />
       </div>
     </>
   )

@@ -16,6 +16,7 @@ export class ApiError extends Error {
 
 /** The features that need the missing server module. The ids are translation keys (notImplemented.features.*). */
 export type FeatureId =
+  | 'overview'
   | 'overTime'
   | 'recentDrawings'
   | 'thumbnails'
@@ -23,6 +24,13 @@ export type FeatureId =
   | 'sessionStats'
   | 'reports'
   | 'reportGeneration'
+  | 'timeline'
+  | 'tracking'
+  | 'heatmap'
+  | 'multiplayer'
+  | 'cohort'
+  | 'history'
+  | 'export'
 
 /**
  * A feature that needs a part of the server that does not exist yet (mostly the analysis module, TEC-02).

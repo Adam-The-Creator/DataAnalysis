@@ -381,6 +381,38 @@ Functions:
 - `[REQUIREMENT]` TEC-12 (MVP): The metric catalogue is documented in the repo,
   and the API is documented through the FastAPI `/docs` page.
 
+## Decisions made while building Phase 2
+
+- `[DECISION]` P2-01 (CMP-03): The group to compare with is chosen freely: the same
+  game type and/or the same session, and an age range (from and to) with the presets
+  children (up to 12), teenagers (13 to 17) and adults (18 and over). A group of fewer than
+  3 drawings gets no percentiles. A percentile only says where a drawing lies among the
+  others, never better or worse.
+- `[DECISION]` P2-02 (MET-02, DRW-07): A pause is a gap of more than 5 seconds between
+  strokes (adjustable on the timeline). A gap of more than 30 minutes is a break between
+  sittings (the drawing was continued later): it is no pause, it is left out of the time
+  span, it is cut down to 5 seconds on the time axis of the replay and the timeline, and
+  the drawing gets the data quality flag "continued after a break". Found on real data: one
+  drawing spanned 29 days.
+- `[DECISION]` P2-03 (MUL-02, MUL-03, DRW-06): Defaults: strokes of different authors touch
+  within 5 cm, a turn ends after a gap of 5 seconds, a heatmap cell is 5 cm. The touching
+  distance, the pause limit and the cell size are adjustable in the screens.
+- `[DECISION]` P2-04 (MET-02): The metric catalogue has three more metrics: pause time,
+  menu opens and tool changes. Active drawing time counts the time during which at least
+  one stroke was drawn, so simultaneous drawing of several authors counts once.
+- `[DECISION]` P2-05 (EXP-01): The CSV exists in two dialects: R/SPSS (commas, decimal
+  point, UTF-8) and Excel (semicolons, decimal comma, byte order mark). The UI warns that
+  the file contains personal data.
+- `[DECISION]` P2-06 (EXP-03): The 3D files hold the strokes as lines with their colours.
+  The width is not exported. The game's z axis is negated (right-handed, Y up).
+- `[DECISION]` P2-07: Numbers round half up on the server and in the app, so a report and
+  the screen show the same number.
+- `[DECISION]` P2-08 (TEC-02): A server build without the analysis module still works for
+  what its older endpoints give (login, sessions, session management, participants, the 3D
+  viewer). Everything else says "not implemented" instead of failing.
+- `[INFO]` Not done, and not needed yet: background jobs (TEC-05, a report takes well under
+  a second at the current data size) and server side pagination of the lists (TEC-06, SES-01).
+
 ## Roadmap
 
 | Phase | Content |
@@ -388,6 +420,9 @@ Functions:
 | MVP | AUTH-01..04, ACC-01..02, DASH-01..03, SES-01..04, DRW-01..04, PLY-01..03, MET-01..08, REP-01..06, TEC-01..12 |
 | P2 | SES-05 (session management), DRW-05..09 (replay, heatmaps, timeline, tracking, placed models), PAR-01, CMP-01..03, MUL-01..03, REP-07..08, EXP-01..04 |
 | P3 | AI-01..07 (principles), AI-10..17 (cohort ML, stroke clustering, semantic labelling, VLM description, fuzzy indicators, insight aggregation, optional LLM summary and sketch classifier) |
+
+The MVP and Phase 2 are built. The Roadmap page of the web app shows the state of every
+requirement, including the ones that are only partly done.
 
 ## Future improvements (not requirements now)
 
@@ -442,8 +477,11 @@ here for a later update.
 
 ## Open points to verify
 
-- Does `placedModels` (or anything else) carry the figure position? (FUT-09)
+- Does `placedModels` (or anything else) carry the figure position? (FUT-09) No drawing in
+  the local database has placed models yet, so this could not be checked.
 - Hardware of the server PC (CPU, GPU, RAM), which decides the AI model sizes.
 - Serve the built app from the DatabaseServer (same origin) or separately.
 - Licences of the chosen AI models.
-- Final choice of the charting library.
+- Charting library: the small SVG components covered Phase 2 (trends, timeline, heatmap
+  projections, polar chart). Revisit it only if Phase 3 needs more.
+- The deployed server exe has to be rebuilt to get the analysis module.

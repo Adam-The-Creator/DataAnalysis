@@ -21,6 +21,16 @@ export function AnalysisPanel({ drawingId }: { drawingId: string }) {
       <QueryBoundary query={query}>
         {(analysis) => (
           <div className="space-y-5">
+            {analysis.narrative && analysis.narrative.length > 0 && (
+              <section aria-labelledby="summary-heading">
+                <h3 id="summary-heading" className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t('analysis.summary')}</h3>
+                <div className="space-y-1.5 text-sm text-slate-700">
+                  {analysis.narrative.map((item) => <p key={item.id}>{t(`narrative.${item.id}`, item.params)}</p>)}
+                </div>
+                <p className="mt-2 text-xs text-slate-400">{t('analysis.summaryHint')}</p>
+              </section>
+            )}
+
             <section aria-labelledby="flags-heading">
               <h3 id="flags-heading" className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t('analysis.flags')}</h3>
               {analysis.flags.length === 0 ? (

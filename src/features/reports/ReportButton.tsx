@@ -23,7 +23,7 @@ export function ReportButton({ kind, targetId }: { kind: ReportKind; targetId: s
     <div className="flex flex-col items-end gap-2">
       <Button variant="primary" disabled={create.isPending} onClick={() => void run()}>
         {create.isPending && <Spinner className="h-4 w-4 text-white" />}
-        {t(kind === 'drawing' ? 'reports.generateDrawing' : 'reports.generateSession')}
+        {t(kind === 'drawing' ? 'reports.generateDrawing' : kind === 'session' ? 'reports.generateSession' : 'reports.generateParticipant')}
       </Button>
       {create.data && (
         <p className="text-xs text-slate-500" role="status">

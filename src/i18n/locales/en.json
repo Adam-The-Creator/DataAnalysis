@@ -25,6 +25,7 @@
     "loading": "Loading…",
     "empty": "Nothing to show yet.",
     "retry": "Try again",
+    "cancel": "Cancel",
     "none": "None",
     "notAvailable": "n/a",
     "viewAll": "View all",
@@ -41,16 +42,24 @@
   },
   "notImplemented": {
     "title": "Not implemented yet",
-    "body": "{{feature}} needs the server-side analysis module, which is not built yet.",
+    "body": "{{feature}} needs the server-side analysis module, which this server does not have. A newer server build is needed.",
     "hint": "Choose “Demo data” on the login page to preview how this will look.",
     "features": {
+      "overview": "The overview",
       "overTime": "The drawings-over-time chart",
       "recentDrawings": "The list of recent drawings",
       "thumbnails": "Drawing thumbnails",
       "metrics": "Drawing metrics",
       "sessionStats": "Session statistics",
       "reports": "Stored reports",
-      "reportGeneration": "Report generation"
+      "reportGeneration": "Report generation",
+      "timeline": "The behaviour timeline",
+      "tracking": "The tracked movement",
+      "heatmap": "The heatmap",
+      "multiplayer": "The multiplayer analysis",
+      "cohort": "The comparison with a group",
+      "history": "The participant history",
+      "export": "The export"
     }
   },
   "planned": {
@@ -106,6 +115,7 @@
   "sessions": {
     "title": "Sessions",
     "subtitle": "All sessions, with the number of drawings and participants.",
+    "new": "New session",
     "search": "Search",
     "status": "Status",
     "allStatuses": "All",
@@ -132,6 +142,31 @@
       "participants": "Participants"
     }
   },
+  "sessionForm": {
+    "createTitle": "New session",
+    "editTitle": "Edit session",
+    "name": "Name",
+    "description": "Description",
+    "options": "In the game",
+    "showBoy": "Show the boy figure",
+    "showGirl": "Show the girl figure",
+    "multiplayer": "Multiplayer session",
+    "activate": "Make it the active session",
+    "activateHint": "New drawings are saved into the active session, for every player of this server.",
+    "create": "Create session",
+    "save": "Save changes"
+  },
+  "sessionActions": {
+    "edit": "Edit",
+    "activate": "Make active",
+    "close": "Close session",
+    "delete": "Delete",
+    "defaultCannotClose": "The default session cannot be closed.",
+    "closeTitle": "Close this session?",
+    "closeBody": "Nobody can save drawings into a closed session any more, and it cannot be made active again.",
+    "deleteTitle": "Delete this session?",
+    "deleteBody": "This cannot be undone. A session that still has drawings or an active room cannot be deleted."
+  },
   "sessionDetail": {
     "started": "Started",
     "ended": "Ended",
@@ -155,11 +190,26 @@
   },
   "participants": {
     "title": "Participants",
-    "subtitle": "The players who can draw in the game.",
+    "subtitle": "The players who can draw in the game. Open a participant for the history and the trends.",
     "name": "Name",
     "age": "Age",
     "gender": "Gender",
     "dominantHand": "Dominant hand"
+  },
+  "participant": {
+    "age": "Age {{age}}",
+    "hand": "{{hand}}-handed",
+    "subtitle": "{{count}} drawings across all sessions.",
+    "compareOverTime": "Compare over time",
+    "trends": "Trends over time",
+    "trendsHint": "How the numbers changed from drawing to drawing. Only drawings of one game type are comparable.",
+    "noPoints": "No value for this metric in these drawings.",
+    "chartLabel": "{{metric}} over time",
+    "mixedTypes": "These drawings are of different game types, so the line mixes tasks. Choose one game type to compare like with like.",
+    "noTrends": "A trend needs at least two drawings with a value.",
+    "sparkline": "Trend of {{metric}}",
+    "drawings": "Drawings",
+    "noDrawings": "No drawings."
   },
   "gallery": {
     "noThumbnail": "Thumbnail not available yet"
@@ -178,15 +228,20 @@
     "device": "Device",
     "tracking": "Body tracking",
     "trackingThinned": "Every {{n}}th sample kept",
-    "multiplayer": "{{count}} authors"
+    "sittings": "Sittings",
+    "sittingsValue": "{{count}} (continued after a break)",
+    "multiplayer": "{{count}} authors",
+    "compare": "Compare with…"
   },
   "viewer": {
     "title": "3D view",
     "shown": "{{shown}} of {{total}} strokes shown",
     "label": "Interactive 3D view of the drawing",
     "unsupported": "The 3D view needs WebGL, which is not available in this browser.",
+    "noStrokes": "This drawing has no strokes.",
     "hint": "Drag to rotate, right-drag to move, scroll to zoom, click a stroke to select it",
     "background": "Dark background",
+    "snapshot": "Save PNG",
     "views": {
       "iso": "Reset",
       "front": "Front",
@@ -200,7 +255,21 @@
       "right": "Right"
     },
     "thickness": "Line thickness",
-    "showErased": "Show erased strokes ({{count}})",
+    "detail": "Detail",
+    "detailLevels": {
+      "full": "Full",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "points": "{{shown}} of {{total}} points",
+    "layers": "Show",
+    "showErased": "Erased strokes ({{count}})",
+    "colourByAuthor": "Colour by author",
+    "layerHeatmap": "Heatmap",
+    "layerTracking": "Head and hand movement",
+    "layerModels": "Placed models ({{count}})",
+    "layerFigure": "Figure",
     "authors": "Authors",
     "selected": "Selected stroke",
     "stroke": {
@@ -214,9 +283,113 @@
     "drawn": "Drawn",
     "erased": "Erased"
   },
+  "replay": {
+    "unavailable": "This drawing has no time data, so it cannot be replayed.",
+    "play": "Play",
+    "pause": "Pause",
+    "again": "Play again",
+    "scrubber": "Position in the replay",
+    "speed": "Speed",
+    "showAll": "Show the whole drawing"
+  },
+  "timeline": {
+    "title": "Behaviour timeline",
+    "subtitle": "Strokes, erasing, menu use, tool changes and pauses on one time axis. Click a stroke to select it, click the axis to jump there in the replay.",
+    "label": "Timeline of the drawing process",
+    "pauseLimit": "Pause limit",
+    "empty": "This drawing has no time data.",
+    "legend": "Legend of the timeline marks",
+    "pauseLegend": "Pause",
+    "pause": "Pause of {{seconds}} s",
+    "break": "Break of {{duration}}",
+    "tools": "Tools",
+    "stroke": "{{state}}, {{seconds}} s",
+    "events": {
+      "erase": "Stroke erased",
+      "undo": "Undo",
+      "menuOpen": "Menu opened",
+      "menuClose": "Menu closed",
+      "modeChange": "Mode changed",
+      "colorChange": "Colour changed",
+      "widthChange": "Width changed"
+    },
+    "summary": {
+      "strokes": "Strokes",
+      "erasedStrokes": "Erased strokes",
+      "erases": "Erase actions",
+      "undos": "Undo actions",
+      "menuOpens": "Menu opens",
+      "toolChanges": "Tool changes",
+      "idlePeriods": "Pauses",
+      "idleSeconds": "Time in pauses"
+    }
+  },
+  "tracking": {
+    "title": "Head and hand movement",
+    "subtitle": "How the participant moved while drawing, where the head was turned, and how much space was used.",
+    "none": "No body tracking was recorded for this drawing (older game versions did not record it).",
+    "approximate": "Thinned out: every {{n}}th sample was kept to fit the storage limit, so these numbers are approximate.",
+    "headMovement": "Head moved",
+    "rightHandMovement": "Right hand moved",
+    "leftHandMovement": "Left hand moved",
+    "bodyMovement": "Body moved",
+    "duration": "Tracked for",
+    "exploredArea": "Floor area covered by the head",
+    "headHeight": "Head height",
+    "headDirection": "Where the head was turned",
+    "meanYaw": "Mean direction: {{yaw}}°",
+    "meanPitch": "Mean tilt: {{pitch}}° (positive looks down)",
+    "coverage": "Turned to {{count}} of 12 sectors for at least 5 % of the time",
+    "yawLabel": "Share of the time the head was turned to each of 12 sectors of 30 degrees",
+    "yawHint": "Direction is measured around the vertical axis of the game world, 0° is its forward axis.",
+    "layerHint": "Switch on “Head and hand movement” in the 3D view to see the paths. During the replay the head and hands move along."
+  },
+  "heatmap": {
+    "title": "Ink density",
+    "subtitle": "How much ink lies in each part of the space, seen from the front, the top and the side.",
+    "voxel": "Cell size",
+    "empty": "There is no ink to show.",
+    "projectionLabel": "Ink density seen from the {{view}}",
+    "views": {
+      "front": "Front",
+      "top": "Top",
+      "side": "Side"
+    },
+    "maxInk": "{{value}} cm of ink",
+    "summary": "{{ink}} m of ink in {{cells}} cells of {{voxel}} cm",
+    "layerHint": "Switch on “Heatmap” in the 3D view to see the cells in space."
+  },
+  "multiplayer": {
+    "title": "Authors and collaboration",
+    "subtitle": "Who drew how much, how close the strokes of different authors are, and how they took turns.",
+    "radius": "Touching distance",
+    "author": "Author",
+    "strokes": "Strokes",
+    "ink": "Ink",
+    "share": "Share of the ink",
+    "time": "Drawing time",
+    "proximity": "Closeness of the authors' strokes (within {{radius}} cm)",
+    "pair": "Authors",
+    "firstNearSecond": "First near second",
+    "secondNearFirst": "Second near first",
+    "touching": "Touching strokes",
+    "closest": "Closest",
+    "turns": "Turn-taking",
+    "turnLabel": "Who drew when, one row per author",
+    "turnSummary": "The authors changed {{switches}} times. They drew at the same time for {{time}}, which is {{share}} % of the time spent drawing."
+  },
+  "models": {
+    "title": "Placed models",
+    "subtitle": "The models that were placed in the scene. The 3D view shows them as boxes.",
+    "name": "Model",
+    "position": "Position",
+    "scale": "Scale"
+  },
   "analysis": {
     "title": "Analysis",
     "subtitle": "Descriptive measures of the drawing. They support your judgement, they are not a diagnosis.",
+    "summary": "Summary",
+    "summaryHint": "Written from the numbers by a template, without AI.",
     "flags": "Data quality",
     "flag": "Note",
     "noFlags": "No data quality issues found.",
@@ -224,13 +397,28 @@
     "paletteLabel": "Share of each colour in the ink of the drawing",
     "version": "Analyzer {{version}}, {{time}}"
   },
+  "narrative": {
+    "activityTimed": "{{strokes}} strokes were drawn with a total length of {{length}} m. The participant was drawing for {{active}} s of the {{span}} s between the first and the last stroke.",
+    "activity": "{{strokes}} strokes were drawn with a total length of {{length}} m.",
+    "speed": "The mean drawing speed was {{speed}} m/s.",
+    "space": "The drawing used a space of {{volume}} m³ with a height range of {{height}} m.",
+    "hand": "{{left}} % of the strokes were drawn with the left hand.",
+    "handDominant": "{{left}} % of the strokes were drawn with the left hand (dominant hand: {{dominant}}).",
+    "colour": "{{colours}} distinct colours were used, and {{warm}} % of the coloured ink is warm.",
+    "colourNeutral": "{{colours}} distinct colours were used.",
+    "erase": "{{erased}} strokes were erased ({{ratio}} % of all strokes).",
+    "tools": "The menu was opened {{menu}} times and the drawing tools were changed {{tools}} times.",
+    "pauses": "Pauses of more than {{gap}} s between strokes added up to {{seconds}} s.",
+    "quality": "{{notes}} data quality notes apply to this drawing, see the data quality section."
+  },
   "flags": {
     "legacySchema": "Saved by an older version of the game (data version 1): some data is missing.",
     "thinnedTracking": "The body tracking was thinned out to fit the storage limit, so tracking-based results are approximate.",
     "fewStrokes": "Very few strokes: the statistics are hardly meaningful.",
     "allErased": "All strokes were erased: nothing is left to analyse.",
     "missingFigurePosition": "The position of the figure is missing, so the distance to the figure cannot be computed.",
-    "missingTimeData": "No time information: the time and speed results are unavailable."
+    "missingTimeData": "No time information: the time and speed results are unavailable.",
+    "multipleSittings": "The drawing was continued after a break of more than 30 minutes: the time results only count the time spent drawing."
   },
   "metricGroups": {
     "counts": "Counts",
@@ -247,7 +435,9 @@
     "noTimeData": "The drawing has no usable time information.",
     "noPressure": "Saved before the trigger pressure was recorded.",
     "noFigurePosition": "The figure position is not stored with this drawing yet.",
-    "noChromaticInk": "Only grey, black or white ink was used."
+    "noChromaticInk": "Only grey, black or white ink was used.",
+    "noInk": "The strokes have no length, so there is no ink to measure.",
+    "noEvents": "Saved by a game version that did not record events."
   },
   "metrics": {
     "strokesDrawn": {
@@ -293,12 +483,17 @@
     "drawingSpan": {
       "name": "Time span",
       "definition": "Time from the start of the first stroke to the end of the last stroke.",
-      "note": "Includes the pauses between strokes."
+      "note": "Includes the pauses between strokes, but not breaks of more than 30 minutes (the drawing was continued later)."
     },
     "activeTime": {
       "name": "Active drawing time",
-      "definition": "Summed time the participant was drawing strokes.",
-      "note": "The pauses between strokes are not included."
+      "definition": "Time during which at least one stroke was being drawn.",
+      "note": "The pauses between strokes are not included. With several authors, simultaneous drawing counts once."
+    },
+    "idleTime": {
+      "name": "Pause time",
+      "definition": "Total length of the pauses between strokes that are longer than the pause limit (5 s).",
+      "note": "Long pauses can mean thinking, hesitation or distraction. Pauses are only seen between strokes, so they say nothing about what the participant was doing. Breaks of more than 30 minutes are not pauses."
     },
     "meanSpeed": {
       "name": "Mean speed",
@@ -334,13 +529,48 @@
       "name": "Erased strokes",
       "definition": "Share of all strokes that were erased.",
       "note": "Can reflect self-correction. Interpret it together with the drawing."
+    },
+    "menuOpens": {
+      "name": "Menu opens",
+      "definition": "Number of times the participant opened the in-game menu.",
+      "note": "Only drawings saved by newer versions of the game record this."
+    },
+    "toolChanges": {
+      "name": "Tool changes",
+      "definition": "Number of changes of the drawing mode, colour or width.",
+      "note": "Frequent changes can reflect exploring the tools or searching for the right one. Only newer drawings record this."
     }
+  },
+  "export": {
+    "csv": "Export CSV",
+    "format": "File format",
+    "dialects": {
+      "r": "R, SPSS, pandas",
+      "excel": "Excel (semicolons, decimal comma)"
+    },
+    "dialectHints": {
+      "r": "Commas and decimal points, UTF-8.",
+      "excel": "Opens correctly in a Hungarian or German Excel."
+    },
+    "personalData": "The file contains the names and ages of the participants. Keep it safe.",
+    "download": "Download",
+    "drawing": "Export",
+    "json": "Raw drawing (JSON)",
+    "model3d": "3D model",
+    "formats": {
+      "gltf": "glTF (.gltf)",
+      "obj": "OBJ (.obj)",
+      "ply": "PLY (.ply)"
+    },
+    "includeErased": "Include erased strokes",
+    "modelHint": "The strokes are exported as lines with their colours. The width is not exported."
   },
   "reports": {
     "title": "Reports",
     "subtitle": "Generated reports are stored on the server and reused instead of being generated again.",
     "generateDrawing": "Generate drawing report",
     "generateSession": "Generate session report",
+    "generateParticipant": "Generate participant report",
     "reused": "A stored report was reused.",
     "created": "A new report was generated.",
     "allReports": "All reports",
@@ -353,7 +583,8 @@
     },
     "kinds": {
       "drawing": "Drawing",
-      "session": "Session"
+      "session": "Session",
+      "participant": "Participant"
     },
     "stale": "Out of date",
     "open": "Open",
@@ -382,13 +613,27 @@
       "period": "Period",
       "drawings": "Drawings"
     },
+    "participantTitle": "{{name}}: history",
     "sectionInfo": "Overview",
     "sectionSnapshots": "Snapshots",
+    "sectionSummary": "Summary",
     "sectionMetrics": "Metrics",
     "sectionPalette": "Colours",
     "sectionFlags": "Data quality",
     "sectionParticipants": "Participants",
+    "sectionParticipant": "Participant",
     "sectionDistribution": "Distribution of the metrics",
+    "changeTitle": "Change from the first to the latest drawing",
+    "gameTypeSection": "{{type}}: {{count}} drawings",
+    "columns": {
+      "date": "Date",
+      "drawing": "Drawing",
+      "session": "Session",
+      "first": "First",
+      "latest": "Latest",
+      "change": "Change",
+      "trend": "Trend"
+    },
     "metric": "Metric",
     "min": "Min",
     "median": "Median",
@@ -406,7 +651,54 @@
   },
   "compare": {
     "title": "Compare",
-    "subtitle": "Side-by-side comparison of drawings, participants over time and collaborators. This is planned for the second phase."
+    "subtitle": "Two drawings side by side, a participant over time, or a drawing against a group. The numbers describe, they do not judge.",
+    "modes": "Kind of comparison",
+    "mode": {
+      "drawings": "Two drawings",
+      "time": "Over time",
+      "cohort": "Against a group"
+    },
+    "choose": "Choose…",
+    "drawingA": "Drawing A",
+    "drawingB": "Drawing B",
+    "syncCameras": "Keep the two cameras together",
+    "differences": "Differences between the drawings",
+    "differencesHint": "B compared with A. A metric that one of them does not have is not compared.",
+    "difference": "Difference (B − A)",
+    "change": "Change",
+    "pickTwo": "Choose two drawings to compare.",
+    "participant": "Participant",
+    "pickParticipant": "Choose a participant.",
+    "drawing": "Drawing",
+    "pickDrawing": "Choose a drawing.",
+    "time": {
+      "tooFew": "Not enough drawings for a comparison over time.",
+      "tooFewHint": "The participant needs at least two drawings of the same game type.",
+      "chart": "{{metric}} over time",
+      "baselineVsFollowUp": "Baseline and follow-up",
+      "baselineHint": "Defaults to the first and the latest drawing of this game type.",
+      "baseline": "Baseline",
+      "followUp": "Follow-up"
+    },
+    "cohort": {
+      "group": "Group to compare with",
+      "sameGameType": "Same game type",
+      "sameSession": "Same session",
+      "ageFrom": "Age from",
+      "ageTo": "Age to",
+      "presets": {
+        "children": "Children (up to 12)",
+        "teenagers": "Teenagers (13–17)",
+        "adults": "Adults (18 and over)"
+      },
+      "anyAge": "Any age",
+      "result": "{{name}} among the group ({{date}})",
+      "resultHint": "The percentile tells where the drawing lies among the others: 50 is the middle. It does not say better or worse.",
+      "size": "The group has {{count}} other drawings.",
+      "tooSmall": "A group of {{count}} drawings is too small for percentiles (at least 3 are needed). Widen the group.",
+      "thisDrawing": "This drawing",
+      "percentile": "Percentile"
+    }
   },
   "notFound": {
     "title": "Page not found",

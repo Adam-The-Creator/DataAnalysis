@@ -1,11 +1,10 @@
-import type { Drawing } from '@/api/types'
+import type { DrawingGeometry } from '@/api/types'
 import { rgbToHex, srgbToLinear } from './colors'
-import { computeLineStats } from './geometry'
 
 /**
  * A stroke prepared for display. The viewer and the SVG snapshots only know this shape, so the source of the
- * geometry can change later (the full drawing now, decimated geometry from the analysis API, requirement DRW-03)
- * without touching them.
+ * geometry can change (the analysis API's simplified strokes, or a whole drawing converted on the client) without
+ * touching them.
  *
  * Viewer space is right-handed and Y-up. The game (Unity) is left-handed, so z is negated; otherwise the
  * drawing would be mirrored.
@@ -17,10 +16,11 @@ export interface ViewerStroke {
   erased: boolean
   positions: number[] // x, y, z per point (viewer space)
   colors: number[] // r, g, b per point, linear 0..1
+  times: (number | null)[] // ms on the drawing's time axis, per point (null without time data)
   width: number // metres
   startHex: string
   endHex: string
-  pointCount: number
+  pointCount: number // of the original stroke, before simplification
   length: number // metres
   durationMs: number | null
 }
@@ -33,36 +33,38 @@ export interface Bounds {
   size: number
 }
 
-export function toViewerStrokes(drawing: Drawing): ViewerStroke[] {
-  return drawing.lines
-    .filter((line) => line.points.length > 1)
-    .map((line) => {
-      const stats = line.stats ?? computeLineStats(line.points)
-      const last = line.points.length - 1
+export function toViewerStrokes(geometry: DrawingGeometry): ViewerStroke[] {
+  return geometry.strokes
+    .filter((stroke) => stroke.points.length > 1)
+    .map((stroke) => {
+      const last = stroke.points.length - 1
       const positions: number[] = []
       const colors: number[] = []
-      line.points.forEach((p, i) => {
-        const t = last === 0 ? 0 : i / last
-        positions.push(p.x, p.y, -p.z)
+      const times: (number | null)[] = []
+      stroke.points.forEach(([x, y, z, t], i) => {
+        const f = last === 0 ? 0 : i / last
+        positions.push(x, y, -z)
+        times.push(t)
         colors.push(
-          srgbToLinear((line.startColor.r + t * (line.endColor.r - line.startColor.r)) / 255),
-          srgbToLinear((line.startColor.g + t * (line.endColor.g - line.startColor.g)) / 255),
-          srgbToLinear((line.startColor.b + t * (line.endColor.b - line.startColor.b)) / 255),
+          srgbToLinear((stroke.startColor.r + f * (stroke.endColor.r - stroke.startColor.r)) / 255),
+          srgbToLinear((stroke.startColor.g + f * (stroke.endColor.g - stroke.startColor.g)) / 255),
+          srgbToLinear((stroke.startColor.b + f * (stroke.endColor.b - stroke.startColor.b)) / 255),
         )
       })
       return {
-        id: line.id,
-        authorId: line.userID,
-        hand: line.hand === -1 ? 'left' : 'right',
-        erased: line.status === 0,
+        id: stroke.id,
+        authorId: stroke.authorId,
+        hand: stroke.hand === -1 ? 'left' : 'right',
+        erased: stroke.erased,
         positions,
         colors,
-        width: (line.startWidth + line.endWidth) / 2,
-        startHex: rgbToHex(line.startColor),
-        endHex: rgbToHex(line.endColor),
-        pointCount: stats.pointCount,
-        length: stats.length,
-        durationMs: stats.durationMs ?? null,
+        times,
+        width: stroke.width,
+        startHex: rgbToHex(stroke.startColor),
+        endHex: rgbToHex(stroke.endColor),
+        pointCount: stroke.pointCount,
+        length: stroke.length,
+        durationMs: stroke.durationMs,
       }
     })
 }
@@ -91,4 +93,56 @@ export function strokesBounds(strokes: ViewerStroke[]): Bounds {
   ]
   const size = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2], 0.2)
   return { min, max, center, size }
+}
+
+// --- Replay (requirement DRW-05) ---
+
+/** When a stroke starts and ends on the time axis, or null when it has no time data. */
+export function strokeSpan(stroke: ViewerStroke): { start: number; end: number } | null {
+  const first = stroke.times[0]
+  const last = stroke.times[stroke.times.length - 1]
+  return first != null && last != null ? { start: first, end: last } : null
+}
+
+/** Whether the drawing has time data to replay: at least one stroke with times. */
+export function canReplay(strokes: ViewerStroke[]): boolean {
+  return strokes.some((s) => strokeSpan(s) !== null)
+}
+
+export type ReplayPhase = 'hidden' | 'partial' | 'full'
+
+/** Where a stroke is at replay time t. A stroke without time data is always there. */
+export function replayPhase(stroke: ViewerStroke, time: number | null): ReplayPhase {
+  if (time === null) return 'full'
+  const span = strokeSpan(stroke)
+  if (!span || time >= span.end) return 'full'
+  return time < span.start ? 'hidden' : 'partial'
+}
+
+/** The part of a stroke drawn until time t: the points so far, and an end point interpolated to exactly t. */
+export function sliceStroke(stroke: ViewerStroke, time: number): ViewerStroke | null {
+  const count = stroke.times.length
+  let last = -1
+  for (let i = 0; i < count; i++) {
+    const t = stroke.times[i]
+    if (t != null && t <= time) last = i
+    else if (t != null) break
+  }
+  if (last < 0) return null
+
+  const positions = stroke.positions.slice(0, (last + 1) * 3)
+  const colors = stroke.colors.slice(0, (last + 1) * 3)
+  const times = stroke.times.slice(0, last + 1)
+  const next = last + 1
+  const tLast = stroke.times[last]
+  const tNext = stroke.times[next]
+  if (next < count && tLast != null && tNext != null && tNext > tLast) {
+    const f = (time - tLast) / (tNext - tLast)
+    for (let axis = 0; axis < 3; axis++) {
+      positions.push(stroke.positions[last * 3 + axis] + f * (stroke.positions[next * 3 + axis] - stroke.positions[last * 3 + axis]))
+      colors.push(stroke.colors[last * 3 + axis] + f * (stroke.colors[next * 3 + axis] - stroke.colors[last * 3 + axis]))
+    }
+    times.push(time)
+  }
+  return positions.length >= 6 ? { ...stroke, positions, colors, times } : null
 }

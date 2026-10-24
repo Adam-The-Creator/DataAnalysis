@@ -32,13 +32,19 @@ export function formatNumber(value: number, decimals = 2): string {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: decimals }).format(value)
 }
 
+/** "45 s", "2 min 05 s", "1 h 05 min", "3 d 2 h": the two largest units that matter. */
 export function formatDuration(totalSeconds: number): string {
   const seconds = Math.round(totalSeconds)
   if (seconds < 60) {
     return `${seconds} s`
   }
-  const minutes = Math.floor(seconds / 60)
-  return `${minutes} min ${String(seconds % 60).padStart(2, '0')} s`
+  if (seconds < 3600) {
+    return `${Math.floor(seconds / 60)} min ${String(seconds % 60).padStart(2, '0')} s`
+  }
+  if (seconds < 86400) {
+    return `${Math.floor(seconds / 3600)} h ${String(Math.floor((seconds % 3600) / 60)).padStart(2, '0')} min`
+  }
+  return `${Math.floor(seconds / 86400)} d ${Math.floor((seconds % 86400) / 3600)} h`
 }
 
 export type SessionStatus = 'active' | 'open' | 'closed'
