@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-export type BadgeTone = 'slate' | 'indigo' | 'emerald' | 'amber' | 'rose' | 'sky'
+export type BadgeTone = 'slate' | 'indigo' | 'emerald' | 'amber' | 'rose' | 'sky' | 'violet'
 
 const tones: Record<BadgeTone, string> = {
   slate: 'bg-slate-100 text-slate-700 ring-slate-200',
@@ -10,6 +10,7 @@ const tones: Record<BadgeTone, string> = {
   amber: 'bg-amber-50 text-amber-800 ring-amber-200',
   rose: 'bg-rose-50 text-rose-700 ring-rose-200',
   sky: 'bg-sky-50 text-sky-700 ring-sky-200',
+  violet: 'bg-violet-50 text-violet-800 ring-violet-300', // only for AI output
 }
 
 export function Badge({ tone = 'slate', children, className }: { tone?: BadgeTone; children: ReactNode; className?: string }) {

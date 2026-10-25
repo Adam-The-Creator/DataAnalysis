@@ -8,6 +8,7 @@ import { gameTypeLabel } from '@/lib/gameTypes'
 import { formatMetricValue, metricDef } from '@/lib/metricCatalog'
 import { toViewerStrokes } from '@/lib/strokes'
 import { drawingSvg } from '@/lib/thumbnail'
+import { aiReportStyles } from './aiReportHtml'
 
 /**
  * STAND-IN for the server side report generator (DatabaseServer, analysis/reports.py). A report is one self-contained
@@ -33,7 +34,7 @@ const styles = `
   .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid #cbd5e1; vertical-align: -2px; margin-right: 6px; }
   .views { display: flex; flex-wrap: wrap; gap: 12px; } .views figure { margin: 0; } figcaption { font-size: 12px; color: #64748b; }
   @media print { body { background: #fff; } section { break-inside: avoid; } }
-`
+` + aiReportStyles
 
 function page(title: string, body: string): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title>` +
@@ -69,7 +70,7 @@ function paletteRows(analysis: DrawingAnalysis): string {
 
 export function buildDrawingReport(
   drawing: Drawing, analysis: DrawingAnalysis, narrative: NarrativeItem[], title: string,
-  player: PlayerInfo | undefined, session: Session | undefined,
+  player: PlayerInfo | undefined, session: Session | undefined, aiHtml = '',
 ): string {
   const strokes = toViewerStrokes(geometryFromDrawing(drawing))
   const views = (['front', 'top', 'side'] as const)
@@ -95,6 +96,7 @@ export function buildDrawingReport(
     `<section><h2>${esc(t('report.sectionInfo'))}</h2><table>${info.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</table></section>` +
     `<section><h2>${esc(t('report.sectionSnapshots'))}</h2><div class="views">${views}</div></section>` +
     `<section><h2>${esc(t('report.sectionSummary'))}</h2>${sentences}</section>` +
+    aiHtml +
     `<section><h2>${esc(t('report.sectionMetrics'))}</h2><table>${metricRows(analysis)}</table></section>` +
     `<section><h2>${esc(t('report.sectionPalette'))}</h2>${paletteRows(analysis)}</section>` +
     `<section><h2>${esc(t('report.sectionFlags'))}</h2>${flags}</section>` +
@@ -102,7 +104,7 @@ export function buildDrawingReport(
   )
 }
 
-export function buildSessionReport(session: Session, stats: SessionStats, players: Map<string, PlayerInfo>): string {
+export function buildSessionReport(session: Session, stats: SessionStats, players: Map<string, PlayerInfo>, aiHtml = ''): string {
   const title = session.name
   const distribution = stats.distributions
     .map((d) => {
@@ -121,10 +123,11 @@ export function buildSessionReport(session: Session, stats: SessionStats, player
     `<section><h2>${esc(t('report.sectionInfo'))}</h2><table>` +
     `<tr><th>${esc(t('report.info.session'))}</th><td>${esc(session.name)}</td></tr>` +
     `<tr><th>${esc(t('report.info.description'))}</th><td>${esc(session.description ?? none())}</td></tr>` +
-    `<tr><th>${esc(t('report.info.period'))}</th><td>${esc(formatDateTime(session.startDate))} – ${esc(session.endDate ? formatDateTime(session.endDate) : t('status.open'))}</td></tr>` +
+    `<tr><th>${esc(t('report.info.period'))}</th><td>${esc(formatDateTime(session.startDate))} - ${esc(session.endDate ? formatDateTime(session.endDate) : t('status.open'))}</td></tr>` +
     `<tr><th>${esc(t('report.info.drawings'))}</th><td>${stats.drawingCount}</td></tr></table></section>` +
     `<section><h2>${esc(t('report.sectionParticipants'))}</h2><table><tr><th>${esc(t('report.info.participant'))}</th><th class="num">${esc(t('report.info.drawings'))}</th>` +
     `<th class="num">${esc(t('metrics.strokesDrawn.name'))}</th><th class="num">${esc(t('metrics.totalLength.name'))}</th><th class="num">${esc(t('metrics.activeTime.name'))}</th></tr>${participants}</table></section>` +
+    aiHtml +
     `<section><h2>${esc(t('report.sectionDistribution'))}</h2><table><tr><th>${esc(t('report.metric'))}</th><th class="num">${esc(t('report.min'))}</th><th class="num">${esc(t('report.median'))}</th><th class="num">${esc(t('report.max'))}</th></tr>${distribution}</table></section>` +
     `<p class="note">${esc(t('report.disclaimer'))}</p>`,
   )

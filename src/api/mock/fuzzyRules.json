@@ -1,0 +1,372 @@
+{
+  "name": "Starter rule base",
+  "version": "1",
+  "status": "proposal",
+  "reviewed": "",
+  "description": "Descriptive indicators of how a drawing compares with the others on the measured quantities.",
+  "fallbackRanges": {
+    "strokesDrawn": [
+      2,
+      8,
+      30
+    ],
+    "totalLength": [
+      0.5,
+      3,
+      15
+    ],
+    "meanStrokeLength": [
+      0.1,
+      0.4,
+      1.0
+    ],
+    "boundingVolume": [
+      0.02,
+      0.4,
+      3.0
+    ],
+    "heightRange": [
+      0.1,
+      0.4,
+      1.2
+    ],
+    "meanSpeed": [
+      0.1,
+      0.35,
+      0.8
+    ],
+    "idleTime": [
+      0,
+      20,
+      120
+    ],
+    "eraseRatio": [
+      0,
+      8,
+      30
+    ],
+    "distinctColours": [
+      1,
+      2,
+      5
+    ],
+    "warmShare": [
+      20,
+      55,
+      85
+    ],
+    "directionalChange": [
+      0.05,
+      0.12,
+      0.2
+    ]
+  },
+  "indicators": [
+    {
+      "id": "amountDrawn",
+      "name": "Amount drawn",
+      "rationale": "How much was drawn compared with the others: the number of strokes and the total length of the lines.",
+      "levels": {
+        "low": "little was drawn",
+        "medium": "a typical amount was drawn",
+        "high": "a lot was drawn"
+      },
+      "rules": [
+        {
+          "id": "amount-high",
+          "if": "strokesDrawn is high and totalLength is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "Many strokes and long lines both point to a large drawing."
+        },
+        {
+          "id": "amount-high-weak",
+          "if": "strokesDrawn is high or totalLength is high",
+          "then": "high",
+          "weight": 0.6,
+          "rationale": "One of the two measures alone is a weaker hint, for example a few very long lines."
+        },
+        {
+          "id": "amount-medium",
+          "if": "strokesDrawn is medium or totalLength is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "Either measure in the middle of the group means a typical amount."
+        },
+        {
+          "id": "amount-low",
+          "if": "strokesDrawn is low and totalLength is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "Few strokes and short lines both point to a small drawing."
+        },
+        {
+          "id": "amount-low-weak",
+          "if": "strokesDrawn is low or totalLength is low",
+          "then": "low",
+          "weight": 0.6,
+          "rationale": "One of the two measures alone is a weaker hint."
+        }
+      ]
+    },
+    {
+      "id": "spaceUse",
+      "name": "Use of space",
+      "rationale": "How much room the drawing takes: the volume of its bounding box and its height range.",
+      "levels": {
+        "low": "compact use of space",
+        "medium": "a typical use of space",
+        "high": "expansive use of space"
+      },
+      "rules": [
+        {
+          "id": "space-high",
+          "if": "boundingVolume is high and heightRange is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "A large box and a large height range both mean the drawing reaches far."
+        },
+        {
+          "id": "space-high-weak",
+          "if": "boundingVolume is high or heightRange is high",
+          "then": "high",
+          "weight": 0.6,
+          "rationale": "One stray stroke can enlarge the box, so one measure alone is only a weak hint."
+        },
+        {
+          "id": "space-medium",
+          "if": "boundingVolume is medium or heightRange is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "Either measure in the middle of the group means a typical use of space."
+        },
+        {
+          "id": "space-low",
+          "if": "boundingVolume is low and heightRange is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "A small box and a small height range both mean the drawing stays close together."
+        },
+        {
+          "id": "space-low-weak",
+          "if": "boundingVolume is low or heightRange is low",
+          "then": "low",
+          "weight": 0.6,
+          "rationale": "One measure alone is a weaker hint. Depends also on how far the participant can reach."
+        }
+      ]
+    },
+    {
+      "id": "pace",
+      "name": "Drawing pace",
+      "rationale": "How fast the lines were drawn, from the mean drawing speed.",
+      "levels": {
+        "low": "slow drawing",
+        "medium": "a typical pace",
+        "high": "fast drawing"
+      },
+      "rules": [
+        {
+          "id": "pace-high",
+          "if": "meanSpeed is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "A high mean speed compared with the others is a fast pace."
+        },
+        {
+          "id": "pace-medium",
+          "if": "meanSpeed is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "A mean speed in the middle of the group is a typical pace."
+        },
+        {
+          "id": "pace-low",
+          "if": "meanSpeed is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "A low mean speed compared with the others is a slow pace. It can be careful or hesitant."
+        }
+      ]
+    },
+    {
+      "id": "pauses",
+      "name": "Pauses",
+      "rationale": "How much time passed between the strokes (pauses of more than 5 seconds).",
+      "levels": {
+        "low": "few or short pauses",
+        "medium": "a typical amount of pauses",
+        "high": "long or many pauses"
+      },
+      "rules": [
+        {
+          "id": "pauses-high",
+          "if": "idleTime is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "A lot of time between strokes compared with the others. The data cannot say what the participant did."
+        },
+        {
+          "id": "pauses-medium",
+          "if": "idleTime is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "A pause time in the middle of the group."
+        },
+        {
+          "id": "pauses-low",
+          "if": "idleTime is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "Little time between the strokes compared with the others."
+        }
+      ]
+    },
+    {
+      "id": "selfCorrection",
+      "name": "Self-correction",
+      "rationale": "How many of the strokes were erased again.",
+      "levels": {
+        "low": "little erasing",
+        "medium": "a typical amount of erasing",
+        "high": "a lot of erasing"
+      },
+      "rules": [
+        {
+          "id": "correction-high",
+          "if": "eraseRatio is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "A large share of erased strokes compared with the others. It can reflect self-correction or trying out."
+        },
+        {
+          "id": "correction-medium",
+          "if": "eraseRatio is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "A share of erased strokes in the middle of the group."
+        },
+        {
+          "id": "correction-low",
+          "if": "eraseRatio is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "Few or no erased strokes compared with the others."
+        }
+      ]
+    },
+    {
+      "id": "colourVariety",
+      "name": "Colour variety",
+      "rationale": "How many clearly different colours were used.",
+      "levels": {
+        "low": "few colours",
+        "medium": "a typical number of colours",
+        "high": "many colours"
+      },
+      "rules": [
+        {
+          "id": "variety-high",
+          "if": "distinctColours is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "More distinct colours than most of the others."
+        },
+        {
+          "id": "variety-medium",
+          "if": "distinctColours is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "A number of colours in the middle of the group."
+        },
+        {
+          "id": "variety-low",
+          "if": "distinctColours is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "Fewer distinct colours than most of the others, for example one colour only."
+        }
+      ]
+    },
+    {
+      "id": "colourWarmth",
+      "name": "Colour warmth",
+      "rationale": "The share of warm colours (red, orange, yellow, pink) in the coloured ink.",
+      "levels": {
+        "low": "mostly cool colours",
+        "medium": "a mix of warm and cool colours",
+        "high": "mostly warm colours"
+      },
+      "rules": [
+        {
+          "id": "warmth-high",
+          "if": "warmShare is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "A high share of warm ink compared with the others. The meaning of colours differs between people."
+        },
+        {
+          "id": "warmth-medium",
+          "if": "warmShare is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "A share of warm ink in the middle of the group."
+        },
+        {
+          "id": "warmth-low",
+          "if": "warmShare is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "A low share of warm ink compared with the others."
+        }
+      ]
+    },
+    {
+      "id": "lineCharacter",
+      "name": "Line character",
+      "rationale": "Whether the lines are long and smooth, or short and winding.",
+      "levels": {
+        "low": "long, smooth lines",
+        "medium": "lines of a typical length and shape",
+        "high": "short, winding lines"
+      },
+      "rules": [
+        {
+          "id": "line-high",
+          "if": "meanStrokeLength is low and directionalChange is high",
+          "then": "high",
+          "weight": 1.0,
+          "rationale": "Short strokes that change direction a lot make a fragmented, winding line."
+        },
+        {
+          "id": "line-low",
+          "if": "meanStrokeLength is high and directionalChange is low",
+          "then": "low",
+          "weight": 1.0,
+          "rationale": "Long strokes that change direction little make a calm, smooth line."
+        },
+        {
+          "id": "line-medium",
+          "if": "meanStrokeLength is medium and directionalChange is medium",
+          "then": "medium",
+          "weight": 1.0,
+          "rationale": "Both measures in the middle of the group."
+        },
+        {
+          "id": "line-high-weak",
+          "if": "meanStrokeLength is low or directionalChange is high",
+          "then": "high",
+          "weight": 0.5,
+          "rationale": "One of the two alone is only a weak hint."
+        },
+        {
+          "id": "line-low-weak",
+          "if": "meanStrokeLength is high or directionalChange is low",
+          "then": "low",
+          "weight": 0.5,
+          "rationale": "One of the two alone is only a weak hint."
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { QueryBoundary } from '@/components/ui/states'
 import { useAuth } from '@/auth/authContext'
+import { AiDrawingPanel } from '@/features/ai/AiDrawingPanel'
 import { DrawingExportMenu } from '@/features/export/DrawingExportMenu'
 import { ReportButton } from '@/features/reports/ReportButton'
 import { displayName, formatDateTime, shortId } from '@/lib/format'
@@ -60,6 +61,7 @@ function DrawingContent({ drawingId, geometry, detail, onDetailChange, isPsychol
   const { t } = useTranslation()
   const { metadata } = geometry
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [highlightIds, setHighlightIds] = useState<string[]>([]) // the strokes of an AI stroke group
   const [voxelSize, setVoxelSize] = useState(0.05)
 
   const hasTimes = geometry.strokes.some((s) => s.points.length > 1 && s.points[0][3] != null)
@@ -131,12 +133,14 @@ function DrawingContent({ drawingId, geometry, detail, onDetailChange, isPsychol
             onDetailChange={onDetailChange}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            highlightIds={highlightIds}
             replay={replay}
             voxelSize={voxelSize}
             analysisLayers={isPsychologist}
           />
           {isPsychologist && (
             <>
+              <AiDrawingPanel drawingId={drawingId} onHighlight={setHighlightIds} />
               <TimelinePanel drawingId={drawingId} authorNames={authorNames} selectedId={selectedId} onSelect={setSelectedId} replay={replay} />
               {multiAuthor && <MultiplayerPanel drawingId={drawingId} authorNames={authorNames} />}
               <TrackingPanel drawingId={drawingId} authorNames={authorNames} />

@@ -42,6 +42,8 @@ export interface DrawingViewerProps {
   onDetailChange: (detail: DetailLevel) => void
   selectedId: string | null
   onSelect: (id: string | null) => void
+  /** Strokes to emphasise like a selected one, for example an AI stroke group (requirement AI-11). */
+  highlightIds?: string[]
   replay: Replay
   voxelSize: number
   /** Psychologists only: the heatmap and the tracking come from the analysis endpoints. */
@@ -57,6 +59,7 @@ function Scene(props: {
   strokes: ViewerStroke[]
   bounds: ReturnType<typeof strokesBounds>
   selectedId: string | null
+  highlight: ReadonlySet<string>
   thickness: number
   dark: boolean
   view: ViewRequest
@@ -88,7 +91,7 @@ function Scene(props: {
           key={stroke.id}
           stroke={stroke}
           thickness={props.thickness}
-          selected={stroke.id === props.selectedId}
+          selected={stroke.id === props.selectedId || props.highlight.has(stroke.id)}
           time={props.time}
           showErased={props.showErased}
           onSelect={props.onSelect}
@@ -105,10 +108,11 @@ function Scene(props: {
 }
 
 export function DrawingViewer({
-  drawingId, geometry, authorNames, detail, onDetailChange, selectedId, onSelect, replay, voxelSize, analysisLayers,
+  drawingId, geometry, authorNames, detail, onDetailChange, selectedId, onSelect, highlightIds, replay, voxelSize, analysisLayers,
   sync, compact = false, title,
 }: DrawingViewerProps) {
   const { t } = useTranslation()
+  const highlight = useMemo(() => new Set(highlightIds ?? []), [highlightIds])
   const baseStrokes = useMemo(() => toViewerStrokes(geometry), [geometry])
   const [hiddenAuthors, setHiddenAuthors] = useState<string[]>([])
   const [hand, setHand] = useState<'both' | 'left' | 'right'>('both')
@@ -204,7 +208,7 @@ export function DrawingViewer({
             onPointerMissed={() => onSelect(null)}
           >
             <Scene
-              strokes={visible} bounds={bounds} selectedId={selectedId} thickness={thickness} dark={dark} view={view}
+              strokes={visible} bounds={bounds} selectedId={selectedId} highlight={highlight} thickness={thickness} dark={dark} view={view}
               time={time} showErased={showErased} showStrokes geometry={geometry} layers={layers}
               heatmap={heatmap.data} tracking={tracking.data} sync={sync} onSelect={onSelect} registerSnapshot={registerSnapshot}
             />

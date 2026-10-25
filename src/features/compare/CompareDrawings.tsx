@@ -44,7 +44,7 @@ export function CompareDrawings({ items, a, b, onChange }: {
   const sync = useMemo(() => createCameraSync(), [])
   const analysisA = useDrawingAnalysis(a)
   const analysisB = useDrawingAnalysis(b)
-  const nameOf = (id: string | undefined) => items.find((i) => i.meta.id === id)?.meta.name ?? '–'
+  const nameOf = (id: string | undefined) => items.find((i) => i.meta.id === id)?.meta.name ?? '-'
 
   return (
     <div className="space-y-6">

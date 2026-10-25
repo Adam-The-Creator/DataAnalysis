@@ -38,9 +38,9 @@ export function ParticipantsPage() {
                             {displayName(p.info, p.id)}
                           </Link>
                         </td>
-                        <td className="px-4 py-3">{p.info.age ?? '–'}</td>
-                        <td className="px-4 py-3">{p.info.gender ?? '–'}</td>
-                        <td className="px-4 py-3">{p.info.dominantHand ?? '–'}</td>
+                        <td className="px-4 py-3">{p.info.age ?? '-'}</td>
+                        <td className="px-4 py-3">{p.info.gender ?? '-'}</td>
+                        <td className="px-4 py-3">{p.info.dominantHand ?? '-'}</td>
                       </tr>
                     ))}
                   </tbody>

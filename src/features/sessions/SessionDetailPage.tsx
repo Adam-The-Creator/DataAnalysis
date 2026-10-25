@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, QueryBoundary } from '@/components/ui/states'
 import { SessionStatusBadge } from '@/components/ui/StatusBadges'
+import { AiSessionPanel } from '@/features/ai/AiSessionPanel'
 import { DrawingCard } from '@/features/drawings/DrawingCard'
 import { SessionCsvMenu } from '@/features/export/SessionCsvMenu'
 import { ReportButton } from '@/features/reports/ReportButton'
@@ -122,9 +123,9 @@ function SessionBody({ session, metas }: { session: Session; metas: DrawingMeta[
                 return (
                   <tr key={id}>
                     <td className="px-4 py-2.5 font-medium text-slate-900">{nameOf(id)}</td>
-                    <td className="px-4 py-2.5">{info?.age ?? '–'}</td>
-                    <td className="px-4 py-2.5">{info?.gender ?? '–'}</td>
-                    <td className="px-4 py-2.5">{info?.dominantHand ?? '–'}</td>
+                    <td className="px-4 py-2.5">{info?.age ?? '-'}</td>
+                    <td className="px-4 py-2.5">{info?.gender ?? '-'}</td>
+                    <td className="px-4 py-2.5">{info?.dominantHand ?? '-'}</td>
                     <td className="px-4 py-2.5 text-right tabular-nums">{metas.filter((m) => m.playerID === id).length}</td>
                   </tr>
                 )
@@ -137,6 +138,8 @@ function SessionBody({ session, metas }: { session: Session; metas: DrawingMeta[
       <Card title={t('sessionDetail.statistics')} subtitle={t('sessionDetail.statisticsHint')}>
         <QueryBoundary query={stats}>{(data) => <StatisticsTables stats={data} nameOf={nameOf} />}</QueryBoundary>
       </Card>
+
+      <AiSessionPanel sessionId={session.id} />
 
       <Card
         title={t('sessionDetail.gallery', { count: shown.length })}
@@ -228,7 +231,7 @@ function StatisticsTables({ stats, nameOf }: { stats: SessionStats; nameOf: (id:
                 <td className="px-4 py-2 text-right tabular-nums">{row.drawings}</td>
                 {columns.map((id) => {
                   const value = row.metrics[id]
-                  return <td key={id} className="px-4 py-2 text-right tabular-nums">{value == null ? '–' : formatMetricValue(metricDef(id), value)}</td>
+                  return <td key={id} className="px-4 py-2 text-right tabular-nums">{value == null ? '-' : formatMetricValue(metricDef(id), value)}</td>
                 })}
               </tr>
             ))}

@@ -3,7 +3,6 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NotImplementedError } from '@/api/errors'
 import { describeError } from '@/lib/describeError'
-import { Badge } from './Badge'
 import { Button } from './Button'
 
 /** Loading, empty and error states of every view (requirement TEC-07). */
@@ -59,11 +58,6 @@ export function NotImplementedPanel({ error }: { error: NotImplementedError }) {
     <div className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
       <p className="font-medium">{t('notImplemented.title')}</p>
       <p className="mt-1">{t('notImplemented.body', { feature: t(`notImplemented.features.${error.feature}`) })}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        {error.requirements.map((id) => (
-          <Badge key={id} tone="amber">{id}</Badge>
-        ))}
-      </div>
       <p className="mt-2 text-xs text-amber-800">{t('notImplemented.hint')}</p>
     </div>
   )

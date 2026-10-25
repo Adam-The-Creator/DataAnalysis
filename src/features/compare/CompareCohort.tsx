@@ -122,7 +122,7 @@ export function CompareCohort({ items, drawingId, onChange }: {
                     <tbody className="divide-y divide-slate-100">
                       {result.metrics.map((row) => {
                         const def = metricDef(row.id)
-                        const show = (v: number | null) => (v != null ? formatMetricValue(def, v) : '–')
+                        const show = (v: number | null) => (v != null ? formatMetricValue(def, v) : '-')
                         return (
                           <tr key={row.id}>
                             <td className="py-2 pr-4 text-slate-700">{t(`metrics.${row.id}.name`)}</td>

@@ -1,0 +1,245 @@
+{
+  "name": "Default vocabulary",
+  "version": "1",
+  "templates": [
+    "a simple drawing of {}",
+    "a line sketch of {}",
+    "a child's drawing of {}"
+  ],
+  "labels": [
+    {
+      "id": "person",
+      "name": "person",
+      "other": false,
+      "phrases": [
+        "a person",
+        "a human figure",
+        "a stick figure"
+      ]
+    },
+    {
+      "id": "face",
+      "name": "face",
+      "other": false,
+      "phrases": [
+        "a face",
+        "a smiley face"
+      ]
+    },
+    {
+      "id": "animal",
+      "name": "animal",
+      "other": false,
+      "phrases": [
+        "an animal",
+        "a dog",
+        "a cat"
+      ]
+    },
+    {
+      "id": "bird",
+      "name": "bird",
+      "other": false,
+      "phrases": [
+        "a bird",
+        "a bird with wings"
+      ]
+    },
+    {
+      "id": "fish",
+      "name": "fish",
+      "other": false,
+      "phrases": [
+        "a fish",
+        "a fish in the water"
+      ]
+    },
+    {
+      "id": "house",
+      "name": "house",
+      "other": false,
+      "phrases": [
+        "a house",
+        "a building with a roof"
+      ]
+    },
+    {
+      "id": "tree",
+      "name": "tree",
+      "other": false,
+      "phrases": [
+        "a tree",
+        "a tree with leaves"
+      ]
+    },
+    {
+      "id": "flower",
+      "name": "flower",
+      "other": false,
+      "phrases": [
+        "a flower",
+        "a flower with petals"
+      ]
+    },
+    {
+      "id": "sun",
+      "name": "sun",
+      "other": false,
+      "phrases": [
+        "the sun",
+        "a sun with rays"
+      ]
+    },
+    {
+      "id": "moon",
+      "name": "moon or star",
+      "other": false,
+      "phrases": [
+        "the moon",
+        "a star",
+        "the night sky"
+      ]
+    },
+    {
+      "id": "cloud",
+      "name": "cloud or rain",
+      "other": false,
+      "phrases": [
+        "a cloud",
+        "rain falling"
+      ]
+    },
+    {
+      "id": "water",
+      "name": "water",
+      "other": false,
+      "phrases": [
+        "water waves",
+        "the sea",
+        "a river"
+      ]
+    },
+    {
+      "id": "mountain",
+      "name": "mountain",
+      "other": false,
+      "phrases": [
+        "a mountain",
+        "hills"
+      ]
+    },
+    {
+      "id": "heart",
+      "name": "heart",
+      "other": false,
+      "phrases": [
+        "a heart",
+        "a love heart"
+      ]
+    },
+    {
+      "id": "rainbow",
+      "name": "rainbow",
+      "other": false,
+      "phrases": [
+        "a rainbow",
+        "colourful arcs"
+      ]
+    },
+    {
+      "id": "boat",
+      "name": "boat",
+      "other": false,
+      "phrases": [
+        "a boat",
+        "a ship on the water"
+      ]
+    },
+    {
+      "id": "vehicle",
+      "name": "vehicle",
+      "other": false,
+      "phrases": [
+        "a car",
+        "a vehicle with wheels"
+      ]
+    },
+    {
+      "id": "path",
+      "name": "path or fence",
+      "other": false,
+      "phrases": [
+        "a path",
+        "a road",
+        "a fence"
+      ]
+    },
+    {
+      "id": "fire",
+      "name": "fire",
+      "other": false,
+      "phrases": [
+        "a fire",
+        "flames"
+      ]
+    },
+    {
+      "id": "door",
+      "name": "door or window",
+      "other": false,
+      "phrases": [
+        "a door",
+        "a window"
+      ]
+    },
+    {
+      "id": "furniture",
+      "name": "furniture",
+      "other": false,
+      "phrases": [
+        "a table",
+        "a chair",
+        "a bed"
+      ]
+    },
+    {
+      "id": "toy",
+      "name": "toy or ball",
+      "other": false,
+      "phrases": [
+        "a ball",
+        "a toy",
+        "a balloon"
+      ]
+    },
+    {
+      "id": "scribble",
+      "name": "scribble",
+      "other": true,
+      "phrases": [
+        "random scribbles",
+        "tangled lines",
+        "a messy scribble"
+      ]
+    },
+    {
+      "id": "pattern",
+      "name": "pattern",
+      "other": true,
+      "phrases": [
+        "an abstract pattern",
+        "repeating shapes",
+        "geometric lines"
+      ]
+    },
+    {
+      "id": "blank",
+      "name": "almost empty",
+      "other": true,
+      "phrases": [
+        "an almost empty picture",
+        "a single line"
+      ]
+    }
+  ]
+}

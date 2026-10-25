@@ -10,8 +10,10 @@
     "participants": "Participants",
     "compare": "Compare",
     "reports": "Reports",
+    "ai": "AI",
     "roadmap": "Roadmap",
     "myRecords": "My records",
+    "myProfile": "My profile",
     "feedback": "Feedback",
     "adminUsage": "Usage",
     "adminFeedback": "Feedback"
@@ -30,6 +32,8 @@
     "empty": "Nothing to show yet.",
     "retry": "Try again",
     "cancel": "Cancel",
+    "yes": "Yes",
+    "moreInfo": "More information",
     "none": "None",
     "notAvailable": "n/a",
     "viewAll": "View all",
@@ -65,11 +69,269 @@
       "history": "The participant history",
       "export": "The export",
       "feedback": "The feedback page",
-      "admin": "The admin dashboard"
+      "admin": "The admin dashboard",
+      "ai": "The AI decision support"
     }
   },
-  "planned": {
-    "title": "Planned features"
+  "ai": {
+    "label": "AI-generated",
+    "warning": "Decision support, not a diagnosis. A psychologist has to review it.",
+    "unevaluatedBadge": "Not evaluated",
+    "notEvaluated": "This function has not yet been tried on a sample set of drawings together with a psychologist. Treat the result with extra care.",
+    "openSettings": "AI settings",
+    "notEnough": "The comparison group has {{have}} drawings, at least {{need}} are needed.",
+    "reasons": {
+      "switchedOff": "This AI function is switched off in the server configuration.",
+      "notEnoughData": "Not enough drawings in the comparison group for this function.",
+      "noStrokes": "The drawing has no drawn strokes.",
+      "missingLibrary": "A Python library this function needs is not installed on the server.",
+      "missingModel": "The model this function needs is not installed on the server.",
+      "serviceUnreachable": "The local model server (Ollama) cannot be reached.",
+      "invalidRules": "The rule base file is invalid.",
+      "invalidVocabulary": "The vocabulary file is invalid.",
+      "diagnosticLanguage": "The model’s answer used clinical or diagnostic wording and was discarded.",
+      "invalidAnswer": "The model’s answer did not match the expected format and was discarded.",
+      "timeout": "The model did not answer in time.",
+      "failed": "The function failed."
+    },
+    "views": { "front": "Front", "top": "Top", "side": "Side", "iso": "Isometric" },
+    "levels": { "low": "low", "medium": "medium", "high": "high" },
+    "kinds": {
+      "statistical": "Statistics",
+      "rules": "Rule base",
+      "neural": "Neural network",
+      "language": "Language model",
+      "vision-language": "Vision-language model",
+      "library": "Library",
+      "runtime": "Runtime"
+    },
+    "confidenceKinds": {
+      "vocabularyShare": "share of the vocabulary, not the probability of being right",
+      "membership": "membership degree",
+      "unknown": "not a probability"
+    },
+    "scope": { "gameType": "The same game type", "session": "The same session", "all": "All drawings" },
+    "provenance": {
+      "title": "How was this produced?",
+      "model": "Model",
+      "version": "Version",
+      "licence": "Licence",
+      "kind": "Type",
+      "prompt": "Prompt, rules or vocabulary",
+      "confidence": "Confidence",
+      "noConfidence": "none, this method has no confidence value",
+      "parameters": "Parameters",
+      "evidence": "Evidence",
+      "generated": "Generated",
+      "evaluated": "Evaluated with psychologists",
+      "notEvaluated": "not yet"
+    },
+    "evidence": {
+      "viewAlt": "The {{view}} view of the drawing, as the model saw it",
+      "metrics": "Measurements",
+      "drawings": "{{count}} drawings",
+      "facts": "The facts the model was given"
+    },
+    "job": {
+      "run": "Run",
+      "retry": "Try again",
+      "regenerate": "Run again",
+      "discard": "Discard",
+      "cancel": "Cancel",
+      "working": "Working…",
+      "hint": "This runs in the background on the server and can take a while. You can leave this page.",
+      "stale": "This result is out of date: the drawing or the findings it was written from have changed. Run it again.",
+      "discardTitle": "Discard this AI result?",
+      "discardBody": "The stored result is deleted. Reports that were made earlier keep the text they contain."
+    },
+    "panel": {
+      "title": "AI decision support",
+      "subtitle": "Indicators, comparison with other drawings, stroke groups, and descriptions by models",
+      "compareWith": "Compare with",
+      "banner": "Everything in the violet frames is AI-generated. It describes the drawing and suggests what to look at. It is not a diagnosis, it can be wrong, and it has to be reviewed by a psychologist before anything is concluded from it.",
+      "switchedOff": "AI is switched off in the server configuration.",
+      "settingsHint": "Which functions are on, which models are used and under which licence:"
+    },
+    "indicators": {
+      "title": "Indicators (fuzzy rules)",
+      "noRule": "no rule applies",
+      "why": "Why this result?",
+      "inputs": "Measurements used",
+      "rules": "Rules that fired",
+      "noValue": "no value, so the rules that need it were skipped",
+      "ruleText": "if {{condition}} then {{level}} (rule strength {{strength}} %, weight {{weight}})",
+      "ruleDefinition": "if {{condition}} then {{level}} (weight {{weight}})",
+      "skipped": "Rules skipped because a value is missing: {{rules}}",
+      "ruleBase": "Rule base: {{name}} v{{version}}.",
+      "basis": { "cohort": "percentiles of the group", "fixed": "fixed ranges" },
+      "basisNote": {
+        "cohort": "Compared with the percentiles of {{count}} other drawings.",
+        "fixed": "The comparison group ({{count}} other drawings) is small, so fixed ranges are used.",
+        "mixed": "Compared with the percentiles of {{count}} other drawings where they differ enough, and with fixed ranges otherwise."
+      },
+      "status": { "proposal": "proposal, not reviewed yet", "reviewed": "reviewed" }
+    },
+    "cohort": {
+      "title": "Comparison with other drawings",
+      "atypical": "On at least one measurement this drawing is far from the others in its comparison group.",
+      "typical": "This drawing is not atypical for its comparison group.",
+      "size": "{{count}} drawings compared.",
+      "notable": "Notable measurements",
+      "noNotable": "No measurement is notably far from the others.",
+      "notableLine": "{{metric}}: {{direction}} than the others ({{value}}, robust z-score {{z}})",
+      "notableShort": "{{metric}} {{direction}} than the others ({{value}})",
+      "direction": { "high": "higher", "low": "lower" },
+      "beyondLimit": "beyond the limit",
+      "atypicalShort": "atypical",
+      "zHint": "“Far from the others” means a robust z-score beyond ±{{limit}} (median and median absolute deviation of the group), on a measurement that varies in the group. It does not mean better, worse or abnormal.",
+      "isolation": "Second opinion by an isolation forest: this drawing ranks {{rank}} of {{of}} (1 = easiest to tell apart from the rest).",
+      "similar": "Most similar drawings",
+      "similarity": "similarity {{value}} %"
+    },
+    "map": {
+      "title": "Map of the comparison group",
+      "colourBy": "Colour and shape by",
+      "participant": "Participant",
+      "gameType": "Game type",
+      "label": "Map of {{count}} drawings",
+      "hint": "Drawings close together have similar measurements. The axes are mixtures of the measurements (a principal component analysis). A dashed ring marks an atypical drawing. Choose a point to open that drawing.",
+      "axis": "Axis {{n}} ({{explained}} % of the variation): mostly {{metrics}}"
+    },
+    "groups": {
+      "title": "Stroke groups",
+      "summary": "{{groups}} groups of strokes drawn close together in space and time. {{ungrouped}} strokes belong to no group.",
+      "none": "No groups were found.",
+      "group": "Group",
+      "name": "Group {{id}}",
+      "strokes": "Strokes",
+      "ink": "Ink",
+      "size": "Size (width × height × depth)",
+      "colours": "Colours",
+      "show": "Show in the viewer",
+      "clear": "Clear",
+      "truncated": "Only the biggest groups are listed."
+    },
+    "labels": {
+      "title": "Semantic labels",
+      "about": "A CLIP model compares rendered views of the whole drawing and of each stroke group with the words of a vocabulary and names the best matches. Models trained on photographs often struggle with abstract line drawings.",
+      "vocabulary": "Vocabulary: {{name}} v{{version}}",
+      "whole": "Whole drawing",
+      "perView": "Per view",
+      "groups": "Stroke groups",
+      "unspecific": "Unspecific: no clear match"
+    },
+    "description": {
+      "title": "Description by a vision-language model",
+      "about": "A vision-language model that runs on the server PC looks at rendered views of the drawing and describes what it sees. It is told not to interpret the person.",
+      "abstract": "Abstract drawing",
+      "objects": "Depicted objects",
+      "features": "Notable features",
+      "colours": "Colour words",
+      "certainty": { "low": "unsure", "medium": "fairly sure", "high": "sure" },
+      "certaintyHint": "The certainty is stated by the model itself and is not calibrated."
+    },
+    "summary": {
+      "title": "Conclusion by a language model",
+      "about": "A language model that runs on the server PC writes a short summary from the measurements, the indicators and the other AI findings of this drawing. The template summary above stays the default text.",
+      "observations": "Observations",
+      "explore": "Things the psychologist could explore",
+      "limitations": "Limitations",
+      "hint": "A language model can say things that are not in the data. Check every statement against the measurements and the drawing."
+    },
+    "sessionPanel": {
+      "title": "AI decision support",
+      "subtitle": "What recurs across the session, and which drawings stand out"
+    },
+    "sessionCohort": {
+      "title": "Atypical drawings and map",
+      "atypical": "Atypical drawings",
+      "none": "No drawing of this session is atypical on a measurement."
+    },
+    "insights": {
+      "title": "What recurs in this session",
+      "recurring": "“{{label}}” was named for {{drawings}} drawings by {{participants}} participants.",
+      "mostly": "mostly {{level}}",
+      "atypical": "{{count}} drawings stand out on at least one measurement.",
+      "none": "Nothing recurs yet. Run the semantic labelling on the drawings to find recurring labels.",
+      "coverage": "{{labels}} of {{total}} drawings have semantic labels.",
+      "atypicalSkipped": "The session is too small to look for atypical drawings."
+    },
+    "features": {
+      "cohort": "Atypical and similar drawings, map",
+      "groups": "Stroke groups",
+      "indicators": "Fuzzy logic indicators",
+      "insights": "Session insights",
+      "labels": "Semantic labels",
+      "description": "Description by a vision-language model",
+      "summary": "Conclusion by a language model"
+    },
+    "settings": {
+      "title": "AI settings",
+      "subtitle": "Which AI functions are on, which models they use, and the rule base and vocabulary that steer them.",
+      "principles": "All AI runs on the server PC. No drawing data leaves it, nothing is sent to a cloud service, and only free models are used. AI output is decision support for the psychologist, never a diagnosis.",
+      "functions": "Functions",
+      "functionsHint": "Every function can be switched off on its own.",
+      "allOff": "AI is switched off completely in the server configuration.",
+      "function": "Function",
+      "switch": "Switch",
+      "on": "On",
+      "off": "Off",
+      "evaluation": "Evaluation",
+      "evaluationHint": "A function counts as evaluated once it was tried on a sample set of drawings together with a psychologist and the agreement and the failure modes were written down.",
+      "evaluated": "Evaluated",
+      "notEvaluated": "Not yet",
+      "availability": "Available now",
+      "available": "Available",
+      "switchHint": "The switches and the evaluation flags are set in the server’s config.py and are read when the server starts.",
+      "models": "Models and libraries",
+      "modelsHint": "Every model and library with its version, licence and status. A model is only downloaded when you start it here.",
+      "refresh": "Refresh",
+      "model": "Model",
+      "licence": "Licence",
+      "licenceUnchecked": "Licence not verified yet",
+      "licenceUncheckedLong": "The licence is recorded from the publisher’s model card. It has not yet been checked against the use in the study.",
+      "status": "Status",
+      "usedBy": "Used by",
+      "modelStatus": {
+        "installed": "Installed",
+        "notInstalled": "Not installed",
+        "notDownloaded": "Not downloaded",
+        "unreachable": "Not reachable",
+        "invalid": "Invalid"
+      },
+      "download": "Download",
+      "downloadTitle": "Download {{name}}?",
+      "downloadBody": "This downloads {{size}} onto the server PC. It runs in the background.",
+      "downloadLicence": "Licence: {{licence}}",
+      "sizeUnknown": "an unknown amount of data",
+      "rules": "Fuzzy rule base",
+      "rulesHint": "The rules behind the indicators, with the reason for each rule.",
+      "rulesInvalid": "The rule base file {{file}} is invalid, so the indicators are off:",
+      "rulesEdit": "The rule base is a text file on the server. Edit it there; a change takes effect without a restart. Change “status” to “reviewed” only after psychologists reviewed the rules.",
+      "reviewedBy": "Reviewed: {{who}}",
+      "ruleCount": "{{count}} rules",
+      "vocabulary": "Vocabulary of the semantic labels",
+      "vocabularyHint": "The words a CLIP model can choose between. A word that is not here can never be an answer.",
+      "vocabularyOther": "Amber entries are “other” entries (scribble, pattern, almost empty): they let the model say that nothing recognisable is there."
+    },
+    "report": {
+      "titles": {
+        "indicators": "Indicators from the fuzzy rule base",
+        "cohort": "Comparison with other drawings",
+        "groups": "Stroke groups",
+        "labels": "Semantic labels",
+        "description": "Description by a vision-language model",
+        "summary": "Conclusion by a language model",
+        "insights": "Session insights"
+      },
+      "indicator": "Indicator",
+      "level": "Level",
+      "degree": "Degree",
+      "rules": "Strongest rules",
+      "subject": "Subject",
+      "bestMatching": "Best matching vocabulary entries",
+      "drawingCount": "{{count}} drawings."
+    }
   },
   "status": {
     "active": "Active",
@@ -650,6 +912,21 @@
     "max": "Max",
     "disclaimer": "The numbers describe the drawing. They support the psychologist's judgement and are not a diagnosis."
   },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "The information stored about you. It is the same information as in the game, and you can change it in either place.",
+    "card": "My information",
+    "edit": "Edit my profile",
+    "notFound": "Your information could not be read.",
+    "notSet": "Not set",
+    "genders": { "Male": "Male", "Female": "Female", "Other": "Other" },
+    "hands": { "Left": "Left", "Right": "Right", "Both": "Both" },
+    "nameRequired": "Enter your name.",
+    "ageInvalid": "Enter a whole number of years from 0 to {{max}}.",
+    "ageHint": "Leave it at 0 if you prefer not to say. Players aged 12 or younger get the smiley rating on the feedback page, everyone else the usability questionnaires.",
+    "save": "Save",
+    "saved": "Your profile was saved."
+  },
   "player": {
     "title": "My records",
     "subtitle": "Your information, the sessions you took part in and your drawings.",
@@ -698,7 +975,7 @@
       "ageTo": "Age to",
       "presets": {
         "children": "Children (up to 12)",
-        "teenagers": "Teenagers (13–17)",
+        "teenagers": "Teenagers (13-17)",
         "adults": "Adults (18 and over)"
       },
       "anyAge": "Any age",
@@ -1011,6 +1288,7 @@
       "PLY-01": "Player gallery with thumbnails",
       "PLY-02": "The player's own information",
       "PLY-03": "Sessions the player drew in",
+      "PLY-04": "My profile: a player edits their own information",
       "MET-01": "Metrics computed on the server",
       "MET-02": "Metric catalogue with definitions",
       "MET-03": "Review of the old metric definitions",

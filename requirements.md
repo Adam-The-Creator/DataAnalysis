@@ -229,9 +229,14 @@ collaborator list of a drawing is not reliably filled by the game.
 - `[REQUIREMENT]` PLY-01 (MVP): Gallery of the player's own drawings with
   thumbnails, and the 3D viewer (same component as DRW-01).
 - `[REQUIREMENT]` PLY-02 (MVP): The player's own info (name, gender, age,
-  dominant hand), read only.
+  dominant hand), shown on "My records". It is changed on "My profile" (PLY-04).
 - `[REQUIREMENT]` PLY-03 (MVP): The sessions the player drew in, with the
   session info (name, description, dates).
+- `[REQUIREMENT]` PLY-04 (added after the review of P4): "My profile" page. A player
+  edits their own name, gender, age and dominant hand, the same four fields as in
+  the game. The form checks the limits and the server enforces them (P4-10). After
+  saving, the name in the top bar and the questionnaire offered on the feedback
+  page (by age, FBK-14) follow the new values.
 
 ## Feedback, questionnaires and admin (P3)
 
@@ -688,6 +693,61 @@ Functions:
 - `[INFO]` Not done, and not needed yet: background jobs (TEC-05, a report takes well under
   a second at the current data size) and server side pagination of the lists (TEC-06, SES-01).
 
+## Decisions made while building Phase 4
+
+- `[DECISION]` P4-01 (AI-04, AI-05, SC-07): Marking. Every AI output has one envelope (`ai/envelope.py`) and one
+  place in the UI (`AiBox`) and in the reports (`ai/reporting.py`): the violet frame and the "AI-generated" badge, the
+  sentence "Decision support, not a diagnosis. A psychologist has to review it.", the note "not evaluated" while the
+  function has not passed AI-07, and the provenance (model, version, licence, type, parameters, prompt/rules/vocabulary
+  version, confidence and what it means, evidence). A confidence value always says what the number is (a membership
+  degree, the share of the vocabulary) and is never called a probability of being right. No review state is stored:
+  the marking is permanent and stored review sign-off stays FUT-14.
+- `[DECISION]` P4-02 (AI-03, AI-07): Defaults. Every function is on in `config.py` (`AI_ENABLED`, `AI_FEATURES`) and
+  every function is *not evaluated* (`AI_EVALUATED`) until a trial with psychologists is written down
+  (`DatabaseServer/ai/EVALUATION.md`). The switches are read when the server starts. A function that cannot run
+  (library, model or service missing) says why instead of failing.
+- `[DECISION]` P4-03 (AI-10): A drawing is atypical when a robust z-score (median and MAD of the comparison group, log
+  scale for skewed quantities) is beyond ±3.5 on a measurement that varies in the group. A minimum spread per
+  measurement keeps a tiny difference in a tight group from counting, and a measurement on which more than half of the
+  group is equal never makes a drawing atypical. The isolation forest (12 drawings or more) is a second opinion, and
+  the PCA map and the three nearest neighbours use the same robust z-scores. The group is the same game type (default),
+  the same session, or all drawings; fewer than 8 drawings say "not enough data".
+- `[DECISION]` P4-04 (AI-11): Strokes are resampled every 2 cm, DBSCAN groups the points within 10 cm in space and, when
+  the drawing has time data, 20 s in time (adjustable), and strokes that share a cluster form a group. Groups have no
+  confidence value, and the viewer highlights a chosen group.
+- `[DECISION]` P4-05 (AI-14): The rule base is a TOML file (`ai/rules/fuzzy_rules.toml`) with a rationale for every rule,
+  a version and a `status` (`proposal` until psychologists have reviewed it). It is read again on every request. The
+  starter rule base is written by the developer and describes how a drawing compares with the others (amount drawn,
+  use of space, pace, pauses, self-correction, colour variety and warmth, line character); it makes no statement about
+  the participant. Percentile break points (10th, 50th, 90th) when the group has 8 drawings or more, fixed ranges
+  otherwise.
+- `[DECISION]` P4-06 (AI-12, AI-13, AI-16): Models. The semantic labelling uses OpenCLIP (ViT-B-32, LAION-2B weights) and
+  needs PyTorch; the description and the conclusion use a local Ollama server with `qwen2.5vl:7b` and
+  `qwen2.5:7b-instruct`. The Ollama address has to be a loopback address, and a model answer is checked (format,
+  length, no clinical wording) before it is shown. The language model is given no names, only the game type, the age
+  band and the findings. The deterministic summary (REP-07) stays the default text.
+- `[DECISION]` P4-07 (AI-02, AI-06, TEC-05): Heavy functions are background jobs (one at a time by default) with
+  progress and cancel, their results are stored as files and are shown as out of date when the drawing or the facts they
+  came from change. A model is only downloaded by an explicit action on the AI page. The AI results a report was made
+  with are part of its out-of-date check.
+- `[DECISION]` P4-09 (REP-03, AI-04): The reports always contain the AI sections, whether or not a function has been
+  evaluated with psychologists (decided after the review of P4). The calculated ones (indicators, comparison, stroke
+  groups, session insights) are computed when the report is made, the model based ones (labels, description, conclusion)
+  are the stored results. A stored result that is out of date is still in the report, marked "Out of date". Every section
+  keeps the AI marking, the "not a diagnosis" sentence and the provenance, which says whether the function was evaluated.
+- `[DECISION]` P4-10 (PLY-04, SC-03, SC-08): Validation of the player info on the server. This deliberately changes the
+  existing player update endpoints (the only change to an existing router in this phase). Name: at most 100
+  characters, no control characters. Gender: empty, Male, Female or Other. Dominant hand: empty, Left, Right or Both.
+  Age: a whole number from 0 to 150 (0 means not given). These are the values the game offers; the game's own update
+  call keeps working with them. The single field endpoints keep their JSON.
+- `[DECISION]` P4-11 (TEC-10): Conventions of the screens. Requirement IDs appear only on the Roadmap page, never in the
+  other screens, in error messages or in reports. Explanations behind an "i" are drawn in a layer of their own on top of
+  the page, so no card or table can clip them, and they stay inside the window.
+- `[INFO]` P4-08: Not built: AI-17 (the sketch classifier is optional and can only be judged on the sample set). The
+  demo mode of the web app calculates the classical functions for real (a port of the server code, checked against it on
+  the demo drawings) and shows clearly marked *sample output* for the three model based functions; it has no isolation
+  forest. `src/api/mock/fuzzyRules.json` and `aiVocabulary.json` are exported from the server's own files.
+
 ## Roadmap
 
 | Phase | Content |
@@ -695,13 +755,11 @@ Functions:
 | MVP | AUTH-01..04, ACC-01..02, DASH-01..03, SES-01..04, DRW-01..04, PLY-01..03, MET-01..08, REP-01..06, TEC-01..12 |
 | P2 | SES-05 (session management), DRW-05..09 (replay, heatmaps, timeline, tracking, placed models), PAR-01, CMP-01..03, MUL-01..03, REP-07..08, EXP-01..04 |
 | P3 | FBK-01..05, FBK-10..14, FBK-20 (feedback page, questionnaires, messages), ADM-01..13 (admin account and dashboard), SEC-01..12 (security shields), TEC-13..16 |
-| P4 | AI-01..07 (principles), AI-10..17 (cohort ML, stroke clustering, semantic labelling, VLM description, fuzzy indicators, insight aggregation, optional LLM summary and sketch classifier) |
+| P4 | AI-01..07 (principles), AI-10..17 (cohort ML, stroke clustering, semantic labelling, VLM description, fuzzy indicators, insight aggregation, optional LLM summary and sketch classifier), PLY-04 (My profile, added after the review) |
 
-The MVP and Phase 2 are built. Phase 3 (feedback, questionnaires and admin) is planned and
-does not depend on the AI phase, which is now Phase 4 (it was Phase 3 before). The Roadmap
-page of the web app shows the state of every requirement, including the ones that are only
-partly done. Its registry (`src/features/roadmap/registry.ts`) has to follow the
-renumbering and get the new IDs.
+The MVP, Phase 2 and Phase 3 are built, and Phase 4 (AI) is built except AI-17 (see "Decisions made while
+building Phase 4"). The Roadmap page of the web app shows the state of every requirement, including the ones that are
+only partly done. Its registry (`src/features/roadmap/registry.ts`) has to be updated whenever a requirement changes state.
 
 ## Future improvements (not requirements now)
 
@@ -825,3 +883,17 @@ here for a later update.
   (REP-04)
 - Phase 3: data protection for submissions of minors (consent of the study,
   retention). See FUT-07 and FUT-19.
+- Phase 4: the trial with psychologists on a sample set (AI-07) has not been done, so every function still carries the
+  "not evaluated" note. The protocol and the result template are in `DatabaseServer/ai/EVALUATION.md`.
+- Phase 4: the licences of the models are recorded from the publishers' model cards and not yet verified against the use
+  in the study (AI-06). The settings page says so for every entry.
+- Phase 4: the real models (CLIP ViT-B-32, `qwen2.5vl:7b`, `qwen2.5:7b-instruct`) were run by hand on the 19 demo
+  drawings of the web app, which are generated shapes and not drawings of children (see `DatabaseServer/ai/README.md`).
+  CLIP names houses, suns, water and scribbles but takes the demo trees for flowers, and its shares are not
+  probabilities; the language models needed prompt changes against one-word scenes and guesses about feelings. How well
+  they do on real 3D drawings of participants is unknown until the trial of AI-07. The server PC's hardware (CPU, GPU,
+  RAM) decides whether the 7B models are practical there: the development PC (RTX 5060 Ti, 16 GB) answers in seconds.
+- Phase 4: the starter rule base and the label vocabulary were written by the developer. The rules, the fixed ranges
+  (taken from a handful of test drawings) and the "starter" indicator words have to be reviewed by psychologists.
+- Phase 4: the packaged server exe (with numpy and scikit-learn, and `ai\rules` and `ai\data` as data files) was not
+  built or tried. PyTorch is not bundled, so the CLIP labelling does not work in the exe.

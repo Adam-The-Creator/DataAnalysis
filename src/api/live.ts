@@ -3,7 +3,9 @@ import { ApiError, notImplemented, type FeatureId } from './errors'
 import { del, get, getBlob, getText, post, put } from './http'
 import { buildOverview } from './overview'
 import type {
-  AdminMessage, CohortFilters, CohortResult, CreatedReport, Drawing, DrawingAnalysis, DrawingGeometry, DrawingMeta,
+  AdminMessage, AiDrawingCohort, AiGroups, AiHeavyState, AiIndicators, AiInsights, AiJob, AiModelEntry, AiOutput, AiRulesInfo,
+  AiSessionCohort, AiStatusInfo, AiVocabularyInfo, CohortFilters, CohortResult, CreatedReport, Drawing, DrawingAnalysis,
+  DrawingGeometry, DrawingMeta,
   HeatmapData, InstrumentDefinition, LoginResult, MessagePage, MultiplayerData, MySubmissions, Overview,
   ParticipantHistory, PlayerInfo, QuestionnaireResults, RecentDrawing, ReportInfo, RoleValue, Session, SessionInput,
   SessionStats, SessionSummary, SubmissionReceipt, TimePoint, TimelineData, TrackingData, UsageNumbers,
@@ -124,6 +126,9 @@ export const liveApi: Api = {
         }),
       )
     },
+    updateInfo: async (playerId, input) => {
+      await put(`/players/${playerId}/info`, input)
+    },
     drawings: (playerId) => get<DrawingMeta[]>(`/players/${playerId}/drawings`),
   },
 
@@ -202,6 +207,39 @@ export const liveApi: Api = {
     deleteReport: async (reportId) => {
       await analysis(() => del(`/analysis/reports/${reportId}`), 'reports', ['REP-04', 'TEC-02', 'TEC-03'])
     },
+  },
+
+  // A server build without the AI module answers "Not Found": the screens show a "not implemented" panel
+  ai: {
+    status: () => analysis(() => get<AiStatusInfo>('/ai/status'), 'ai', ['AI-03', 'AI-06']),
+    models: () => analysis(() => get<AiModelEntry[]>('/ai/models'), 'ai', ['AI-06']),
+    downloadModel: (modelId) => analysis(() => post<AiJob>(`/ai/models/${modelId}/download`, {}), 'ai', ['AI-06']),
+    jobs: () => analysis(() => get<AiJob[]>('/ai/jobs'), 'ai', ['AI-02']),
+    rules: () => analysis(() => get<AiRulesInfo>('/ai/rules'), 'ai', ['AI-14']),
+    vocabulary: () => analysis(() => get<AiVocabularyInfo>('/ai/vocabulary'), 'ai', ['AI-12']),
+    drawingCohort: (drawingId, scope, ageMin, ageMax) =>
+      analysis(() => get<AiOutput<AiDrawingCohort>>(`/ai/drawings/${drawingId}/cohort${query({ scope, ageMin, ageMax })}`), 'ai', ['AI-10']),
+    drawingGroups: (drawingId) =>
+      analysis(() => get<AiOutput<AiGroups>>(`/ai/drawings/${drawingId}/groups`), 'ai', ['AI-11']),
+    drawingIndicators: (drawingId, scope, ageMin, ageMax) =>
+      analysis(() => get<AiOutput<AiIndicators>>(`/ai/drawings/${drawingId}/indicators${query({ scope, ageMin, ageMax })}`), 'ai', ['AI-14']),
+    sessionCohort: (sessionId) =>
+      analysis(() => get<AiOutput<AiSessionCohort>>(`/ai/sessions/${sessionId}/cohort`), 'ai', ['AI-10']),
+    sessionInsights: (sessionId) =>
+      analysis(() => get<AiOutput<AiInsights>>(`/ai/sessions/${sessionId}/insights`), 'ai', ['AI-15']),
+    heavy: (drawingId, feature) =>
+      analysis(() => get<AiHeavyState<never>>(`/ai/drawings/${drawingId}/${feature}`), 'ai', ['AI-12', 'AI-13', 'AI-16']),
+    startHeavy: (drawingId, feature, regenerate = false) =>
+      analysis(() => post<AiHeavyState<never>>(`/ai/drawings/${drawingId}/${feature}`, { regenerate }), 'ai', ['AI-12', 'AI-13', 'AI-16']),
+    discardHeavy: async (drawingId, feature) => {
+      await analysis(() => del(`/ai/drawings/${drawingId}/${feature}`), 'ai', ['AI-12', 'AI-13', 'AI-16'])
+    },
+    cancelJob: (jobId) => analysis(() => post<AiJob>(`/ai/jobs/${jobId}/cancel`, {}), 'ai', ['AI-02']),
+    viewImage: (drawingId, view, groupId) =>
+      analysis(
+        async () => URL.createObjectURL(await getBlob(`/ai/drawings/${drawingId}/views/${view}.png${query({ groupId })}`)),
+        'ai', ['AI-04'],
+      ),
   },
 
   // A server build without the feedback module answers "Not Found": the screens show a "not implemented" panel

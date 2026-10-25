@@ -7,12 +7,14 @@ import { AppShell } from '@/components/layout/AppShell'
 import { LoadingBlock } from '@/components/ui/states'
 import { AdminDashboardPage } from '@/features/admin/AdminDashboardPage'
 import { AdminFeedbackPage } from '@/features/admin/AdminFeedbackPage'
+import { AiSettingsPage } from '@/features/ai/AiSettingsPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RoleHome } from '@/features/dashboard/RoleHome'
 import { FeedbackPage } from '@/features/feedback/FeedbackPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { ParticipantPage } from '@/features/participants/ParticipantPage'
 import { ParticipantsPage } from '@/features/participants/ParticipantsPage'
+import { MyProfilePage } from '@/features/player/MyProfilePage'
 import { PlayerHomePage } from '@/features/player/PlayerHomePage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
 import { RoadmapPage } from '@/features/roadmap/RoadmapPage'
@@ -47,12 +49,14 @@ export default function App() {
                     <Route path="participants/:playerId" element={<ParticipantPage />} />
                     <Route path="compare" element={<ComparePage />} />
                     <Route path="reports" element={<ReportsPage />} />
+                    <Route path="ai" element={<AiSettingsPage />} />
                     <Route path="roadmap" element={<RoadmapPage />} />
                   </Route>
 
                   {/* Players: their own records only (requirement ACC-02) */}
                   <Route element={<RequireRole role="player" />}>
                     <Route path="my" element={<PlayerHomePage />} />
+                    <Route path="my/profile" element={<MyProfilePage />} />
                     <Route path="my/drawings/:drawingId" element={<DrawingPage />} />
                   </Route>
 

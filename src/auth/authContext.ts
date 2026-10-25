@@ -13,6 +13,8 @@ export interface AuthContextValue {
   expired: boolean
   login(username: string, password: string): Promise<void>
   logout(): void
+  /** The name shown in the top bar, after the user changed it on their profile. */
+  setName(name: string): void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

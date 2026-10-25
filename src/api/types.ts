@@ -38,6 +38,17 @@ export interface PlayerInfo {
   dominantHand: string | null
 }
 
+/** What a player may change about themself (the same four fields as in the game). The server checks the limits. */
+export interface PlayerInfoInput {
+  name: string
+  /** "Male", "Female", "Other" or "" for not set. */
+  gender: string
+  /** Whole years from 0 to 150, 0 for not given. */
+  age: number
+  /** "Left", "Right", "Both" or "" for not set. */
+  dominantHand: string
+}
+
 export interface DrawingMeta {
   id: string
   playerID: string
@@ -695,4 +706,295 @@ export interface MessagePage {
   total: number
   unread: number
   items: AdminMessage[]
+}
+
+// --- AI decision support (requirements AI-01..AI-16) ---
+//
+// Every AI output comes in the same envelope (AiOutput): it is always labelled as AI-generated and carries the model,
+// parameters, confidence and evidence (AI-04). It is decision support for the psychologist, never a diagnosis (AI-05).
+
+export type AiFeatureId = 'cohort' | 'groups' | 'indicators' | 'insights' | 'labels' | 'description' | 'summary'
+export type AiHeavyFeature = 'labels' | 'description' | 'summary'
+export type AiStatus = 'ok' | 'disabled' | 'unavailable' | 'notEnoughData'
+export type AiReason =
+  | 'switchedOff' | 'notEnoughData' | 'noStrokes' | 'missingLibrary' | 'missingModel' | 'serviceUnreachable'
+  | 'invalidRules' | 'invalidVocabulary' | 'diagnosticLanguage' | 'invalidAnswer' | 'timeout' | 'failed'
+export type AiView = 'front' | 'top' | 'side' | 'iso'
+/** The group a drawing is compared with: the same game type, the same session, or all drawings. */
+export type AiScope = 'gameType' | 'session' | 'all'
+export type FuzzyLevel = 'low' | 'medium' | 'high'
+
+export interface AiModelInfo {
+  id: string
+  name: string
+  version: string
+  licence: string
+  kind: string // statistical, rules, neural, language, vision-language
+}
+
+export type AiEvidence =
+  | { kind: 'metric'; id: MetricId; value: number | null }
+  | { kind: 'strokes'; strokeIds: string[]; label?: string }
+  | { kind: 'view'; view: AiView; groupId?: string }
+  | { kind: 'drawing'; id: string }
+  | { kind: 'facts'; facts: Record<string, unknown> }
+
+export interface AiOutput<T> {
+  ai: true
+  label: string // "AI-generated"
+  disclaimer: string
+  feature: AiFeatureId
+  requirement: string
+  status: AiStatus
+  reason: AiReason | null
+  /** AI-07: tried on a sample set together with a psychologist. */
+  evaluated: boolean
+  model: AiModelInfo
+  params: Record<string, unknown>
+  /** The prompt, rule base or vocabulary version. */
+  promptVersion: string | null
+  /** What the number is says confidenceKind (a membership degree, the vocabulary share, ...): never a probability of being right. */
+  confidence: number | null
+  confidenceKind: string | null
+  evidence: AiEvidence[]
+  notes: string[]
+  moduleVersion: string
+  generatedAt: string
+  result: T | null
+}
+
+export interface AiNotable {
+  metric: MetricId
+  z: number
+  value: number | null
+  direction: 'high' | 'low'
+  beyondLimit: boolean
+}
+
+export interface AiCohortRow {
+  id: string
+  maxAbsZ: number
+  atypical: boolean
+  notable: AiNotable[]
+  isolation: { score: number; rank: number; of: number } | null
+  similar: { id: string; distance: number; similarity: number }[]
+}
+
+export interface AiMap {
+  points: { id: string; x: number; y: number }[]
+  axes: { explained: number; top: { metric: MetricId; loading: number }[] }[]
+}
+
+export interface AiDirectoryEntry {
+  name: string
+  playerId: string
+  gameType: number
+}
+
+export interface AiDrawingCohort {
+  cohortSize: number
+  metrics: MetricId[]
+  zLimit: number
+  subject: AiCohortRow
+  map: AiMap | null
+  directory: Record<string, AiDirectoryEntry>
+}
+
+export interface AiSessionCohort {
+  cohortSize: number
+  metrics: MetricId[]
+  zLimit: number
+  drawings: AiCohortRow[]
+  map: AiMap | null
+  directory: Record<string, AiDirectoryEntry>
+}
+
+export interface AiStrokeGroup {
+  id: string
+  strokeIds: string[]
+  strokeCount: number
+  authors: string[]
+  length: number
+  inkShare: number
+  boundsMin: number[]
+  boundsMax: number[]
+  size: number[]
+  centre: number[]
+  colours: PaletteEntry[]
+  startMs: number | null
+  endMs: number | null
+}
+
+export interface AiGroups {
+  strokeCount: number
+  groups: AiStrokeGroup[]
+  unclustered: string[]
+  timeUsed: boolean
+  truncated: boolean
+}
+
+export interface AiIndicator {
+  id: string
+  name: string
+  rationale: string
+  level: FuzzyLevel | null
+  text: string | null
+  degree: number
+  degrees: Record<FuzzyLevel, number>
+  inputs: { metric: MetricId; value: number | null; basis: 'cohort' | 'fixed' | null; sets: Record<FuzzyLevel, number> | null }[]
+  fired: { rule: string; if: string; then: FuzzyLevel; weight: number; strength: number; rationale: string }[]
+  skipped: { rule: string; missing: MetricId[] }[]
+}
+
+export interface AiIndicators {
+  ruleBase: { name: string; version: string; status: 'proposal' | 'reviewed'; reviewed: string }
+  cohortSize: number
+  basis: 'cohort' | 'fixed' | 'mixed'
+  indicators: AiIndicator[]
+}
+
+export interface AiLabelEntry {
+  label: string
+  name: string
+  other: boolean
+  score: number
+}
+
+export interface AiVerdict {
+  top: AiLabelEntry[]
+  margin: number
+  unspecific: boolean
+}
+
+export interface AiLabels {
+  vocabulary: { name: string; version: string }
+  whole: AiVerdict & { views: { view: AiView; top: AiLabelEntry[] }[] }
+  groups: (AiVerdict & { groupId: string; strokeIds: string[] })[]
+}
+
+export interface AiDescription {
+  depictedObjects: { name: string; certainty: 'low' | 'medium' | 'high' }[]
+  scene: string
+  notableFeatures: string[]
+  colourMoodWords: string[]
+  abstract: boolean
+}
+
+export interface AiSummary {
+  overview: string
+  observations: string[]
+  thingsToExplore: string[]
+  limitations: string[]
+}
+
+export type AiInsight =
+  | { kind: 'recurringLabel'; label: string; name: string; drawings: number; participants: number; drawingIds: string[]; playerIds: string[] }
+  | {
+    kind: 'indicatorLevels'; indicator: string; name: string; counts: Record<FuzzyLevel, number>
+    drawingIds: Record<FuzzyLevel, string[]>; total: number; common: FuzzyLevel | null
+  }
+  | { kind: 'atypical'; drawingIds: string[]; drawings: number }
+
+export interface AiInsights {
+  drawingCount: number
+  insights: AiInsight[]
+  atypicalSkipped: string | null
+  coverage: { labels: number; indicators: number }
+  directory: Record<string, AiDirectoryEntry>
+}
+
+export interface AiResultTypes {
+  labels: AiLabels
+  description: AiDescription
+  summary: AiSummary
+}
+
+export type JobStatus = 'queued' | 'running' | 'done' | 'failed' | 'cancelled'
+
+export interface AiJob {
+  id: string
+  kind: string // labels, description, summary or download
+  targetId: string
+  status: JobStatus
+  progress: number // 0..1
+  message: string
+  error: string | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+/** A heavy function: the stored result (maybe out of date), whether it can run now, and its latest job. */
+export interface AiHeavyState<T> {
+  feature: AiHeavyFeature
+  result: AiOutput<T> | null
+  stale: boolean
+  available: boolean
+  reason: AiReason | null
+  detail: string | null
+  job: AiJob | null
+}
+
+export interface AiFeatureStatus {
+  id: AiFeatureId
+  requirement: string
+  kind: 'classical' | 'rules' | 'model'
+  enabled: boolean
+  evaluated: boolean
+  available: boolean
+  reason: AiReason | null
+  detail: string | null
+  models: string[]
+}
+
+export interface AiStatusInfo {
+  enabled: boolean
+  label: string
+  disclaimer: string
+  moduleVersion: string
+  features: AiFeatureStatus[]
+}
+
+export interface AiModelEntry {
+  id: string
+  name: string
+  version: string
+  kind: 'library' | 'rules' | 'neural' | 'language' | 'vision-language' | 'runtime'
+  licence: string
+  /** False for every model so far: the licences are recorded from the model cards, not yet checked against the study. */
+  licenceChecked: boolean
+  source: string
+  sizeHint: string | null
+  usedBy: AiFeatureId[]
+  status: 'installed' | 'notInstalled' | 'notDownloaded' | 'unreachable' | 'invalid'
+  statusDetail: string | null
+  downloadable: boolean
+  hint: string | null
+}
+
+export interface AiRuleBase {
+  name: string
+  version: string
+  status: 'proposal' | 'reviewed'
+  reviewed: string
+  description: string
+  fallbackRanges: Record<string, number[]>
+  indicators: {
+    id: string
+    name: string
+    rationale: string
+    levels: Record<FuzzyLevel, string>
+    rules: { id: string; if: string; then: FuzzyLevel; weight: number; rationale: string }[]
+  }[]
+}
+
+export interface AiRulesInfo {
+  file: string
+  ruleBase: AiRuleBase | null
+  problems: string[]
+}
+
+export interface AiVocabularyInfo {
+  file: string
+  vocabulary: { name: string; version: string; templates: string[]; labels: { id: string; name: string; other: boolean; phrases: string[] }[] } | null
+  problem: string | null
 }

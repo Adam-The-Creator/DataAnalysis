@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getApi } from '.'
 import type {
-  CohortFilters, MessageFilters, MessageInput, QuestionnaireInput, ReportKind, ResultFilters, SessionInput,
+  AiHeavyFeature, AiJob, AiScope, AiView, CohortFilters, MessageFilters, MessageInput, PlayerInfoInput,
+  QuestionnaireInput, ReportKind, ResultFilters, SessionInput,
 } from './types'
 
 /** Query hooks: the only place where screens talk to the API. Each one is a thin wrapper around getApi(). */
@@ -100,6 +101,18 @@ export function usePlayerInfos(playerIds: string[]) {
       return new Map(ids.map((id, i) => [id, infos[i]] as const))
     },
     enabled: ids.length > 0,
+  })
+}
+
+/**
+ * A player saves their own info. Everything that was read from it is refetched: the info cards, and the feedback page,
+ * which picks the questionnaire by the player's age.
+ */
+export function useUpdateMyInfo(playerId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: PlayerInfoInput) => getApi().players.updateInfo(playerId, input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['players'] }),
   })
 }
 
@@ -290,3 +303,123 @@ export function useDeleteMessage() {
   const invalidate = useInvalidateMessages()
   return useMutation({ mutationFn: (messageId: string) => getApi().admin.deleteMessage(messageId), onSuccess: invalidate })
 }
+
+// --- AI decision support (requirements AI-*) ---
+
+const isActive = (job: AiJob | null | undefined) => job?.status === 'queued' || job?.status === 'running'
+
+export const useAiStatus = () => useQuery({ queryKey: ['ai', 'status'], queryFn: () => getApi().ai.status() })
+
+/** The model list. While a download runs it is refreshed, so the new status appears when the download is done. */
+export const useAiModels = () =>
+  useQuery({
+    queryKey: ['ai', 'models'],
+    queryFn: () => getApi().ai.models(),
+    refetchInterval: (query) => (query.state.data?.some((m) => m.status === 'notDownloaded') ? 4000 : false),
+  })
+
+/** The background jobs, followed every second while one of them is active. */
+export const useAiJobs = () =>
+  useQuery({
+    queryKey: ['ai', 'jobs'],
+    queryFn: () => getApi().ai.jobs(),
+    refetchInterval: (query) => (query.state.data?.some(isActive) ? 1000 : false),
+  })
+
+export const useAiRules = () => useQuery({ queryKey: ['ai', 'rules'], queryFn: () => getApi().ai.rules() })
+export const useAiVocabulary = () => useQuery({ queryKey: ['ai', 'vocabulary'], queryFn: () => getApi().ai.vocabulary() })
+
+export function useAiDownload() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (modelId: string) => getApi().ai.downloadModel(modelId),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['ai', 'jobs'] }),
+      queryClient.invalidateQueries({ queryKey: ['ai', 'models'] }),
+    ]),
+  })
+}
+
+export const useAiCohort = (drawingId: string | undefined, scope: AiScope, enabled = true) =>
+  useQuery({
+    queryKey: ['ai', 'cohort', drawingId, scope],
+    queryFn: () => getApi().ai.drawingCohort(drawingId!, scope),
+    enabled: !!drawingId && enabled,
+    placeholderData: (previous) => previous,
+  })
+
+export const useAiGroups = (drawingId: string | undefined) =>
+  useQuery({
+    queryKey: ['ai', 'groups', drawingId],
+    queryFn: () => getApi().ai.drawingGroups(drawingId!),
+    enabled: !!drawingId,
+  })
+
+export const useAiIndicators = (drawingId: string | undefined, scope: AiScope) =>
+  useQuery({
+    queryKey: ['ai', 'indicators', drawingId, scope],
+    queryFn: () => getApi().ai.drawingIndicators(drawingId!, scope),
+    enabled: !!drawingId,
+    placeholderData: (previous) => previous,
+  })
+
+export const useAiSessionCohort = (sessionId: string | undefined) =>
+  useQuery({
+    queryKey: ['ai', 'sessionCohort', sessionId],
+    queryFn: () => getApi().ai.sessionCohort(sessionId!),
+    enabled: !!sessionId,
+  })
+
+export const useAiSessionInsights = (sessionId: string | undefined) =>
+  useQuery({
+    queryKey: ['ai', 'insights', sessionId],
+    queryFn: () => getApi().ai.sessionInsights(sessionId!),
+    enabled: !!sessionId,
+  })
+
+/** A heavy function of a drawing: its stored result and latest job. While the job runs the state is followed every second. */
+export function useAiHeavy<F extends AiHeavyFeature>(drawingId: string | undefined, feature: F) {
+  return useQuery({
+    queryKey: ['ai', 'heavy', drawingId, feature],
+    queryFn: () => getApi().ai.heavy(drawingId!, feature),
+    enabled: !!drawingId,
+    refetchInterval: (query) => (isActive(query.state.data?.job) ? 1000 : false),
+  })
+}
+
+/** Starting a function or discarding its result changes the state, the report list (a report notices new AI results) and the session insights. */
+function useInvalidateAi(drawingId: string, feature: AiHeavyFeature) {
+  const queryClient = useQueryClient()
+  return () => Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['ai', 'heavy', drawingId, feature] }),
+    queryClient.invalidateQueries({ queryKey: ['ai', 'insights'] }),
+    queryClient.invalidateQueries({ queryKey: ['reports'] }),
+  ])
+}
+
+export function useStartAi<F extends AiHeavyFeature>(drawingId: string, feature: F) {
+  const invalidate = useInvalidateAi(drawingId, feature)
+  return useMutation({
+    mutationFn: (regenerate: boolean) => getApi().ai.startHeavy(drawingId, feature, regenerate),
+    onSuccess: invalidate,
+  })
+}
+
+export function useDiscardAi(drawingId: string, feature: AiHeavyFeature) {
+  const invalidate = useInvalidateAi(drawingId, feature)
+  return useMutation({ mutationFn: () => getApi().ai.discardHeavy(drawingId, feature), onSuccess: invalidate })
+}
+
+export function useCancelAiJob(drawingId: string, feature: AiHeavyFeature) {
+  const invalidate = useInvalidateAi(drawingId, feature)
+  return useMutation({ mutationFn: (jobId: string) => getApi().ai.cancelJob(jobId), onSuccess: invalidate })
+}
+
+/** The image a model was shown (evidence). */
+export const useAiViewImage = (drawingId: string, view: AiView, groupId?: string, enabled = true) =>
+  useQuery({
+    queryKey: ['ai', 'view', drawingId, view, groupId ?? null],
+    queryFn: () => getApi().ai.viewImage(drawingId, view, groupId),
+    enabled,
+    staleTime: Infinity,
+  })

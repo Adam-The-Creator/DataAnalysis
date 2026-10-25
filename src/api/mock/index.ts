@@ -10,6 +10,8 @@ import { geometryFromDrawing } from '@/lib/drawingGeometry'
 import { metricCatalog } from '@/lib/metricCatalog'
 import { toViewerStrokes } from '@/lib/strokes'
 import { drawingSvg, svgDataUrl } from '@/lib/thumbnail'
+import { mockAi, reportOutputs } from './ai'
+import { aiReportHtml } from './aiReportHtml'
 import { analyzeDrawing, analyzeSession, buildNarrative, metricValues } from './analysisEngine'
 import {
   analyzeMultiplayer, buildHeatmap, buildTimeline, compareWithCohort, historyRow, summarizeTracking,
@@ -107,7 +109,10 @@ function generateReport(kind: ReportKind, targetId: string): { title: string; ht
     const title = `${meta?.name ?? targetId}${owner?.name ? ` (${owner.name})` : ''}`
     const session = world.sessions.find((s) => s.id === drawing.metadata.sessionID)
     const analysis = analyzeDrawing(drawing)
-    return { title, html: buildDrawingReport(drawing, analysis, buildNarrative(analysis, owner?.dominantHand ?? null), title, owner, session) }
+    return {
+      title,
+      html: buildDrawingReport(drawing, analysis, buildNarrative(analysis, owner?.dominantHand ?? null), title, owner, session, aiReportHtml(reportOutputs('drawing', targetId))),
+    }
   }
   if (kind === 'participant') {
     const player = infoOf(targetId)
@@ -120,7 +125,7 @@ function generateReport(kind: ReportKind, targetId: string): { title: string; ht
   const session = findSession(targetId)
   const drawings = world.drawings.filter((d) => d.metadata.sessionID === targetId)
   const players = new Map(world.players.map((p) => [p.id, p.info]))
-  return { title: session.name, html: buildSessionReport(session, analyzeSession(targetId, drawings), players) }
+  return { title: session.name, html: buildSessionReport(session, analyzeSession(targetId, drawings), players, aiReportHtml(reportOutputs('session', targetId))) }
 }
 
 function reports(): StoredReport[] {
@@ -220,6 +225,17 @@ export const mockApi: Api = {
       }, 60),
     infos: (playerIds) => later(() => playerIds.map((id) => infoOf(id) ?? null), 80),
     list: () => later(() => getWorld().players.map((p) => ({ id: p.id, role: p.role, info: p.info }))),
+    // The same limits as the server (routers/players.py), with the server's wording of a refusal
+    updateInfo: (playerId, input) =>
+      later(() => {
+        const player = getWorld().players.find((p) => p.id === playerId)
+        if (!player) throw notFound('Player')
+        if (input.name.length > 100) throw new ApiError('http', 422, 'name: String should have at most 100 characters')
+        if (!['', 'Male', 'Female', 'Other'].includes(input.gender)) throw new ApiError('http', 422, "gender: Input should be '', 'Male', 'Female' or 'Other'")
+        if (!['', 'Left', 'Right', 'Both'].includes(input.dominantHand)) throw new ApiError('http', 422, "dominantHand: Input should be '', 'Left', 'Right' or 'Both'")
+        if (!Number.isInteger(input.age) || input.age < 0 || input.age > 150) throw new ApiError('http', 422, 'age: Input should be between 0 and 150')
+        player.info = { ...player.info, name: input.name, gender: input.gender, age: input.age, dominantHand: input.dominantHand }
+      }, 250),
     drawings: (playerId) => later(() => getWorld().metas.filter((m): m is DrawingMeta => m.playerID === playerId), 100),
   },
 
@@ -352,6 +368,26 @@ export const mockApi: Api = {
       later(() => {
         reportStore = reports().filter((r) => r.info.id !== reportId)
       }, 100),
+  },
+
+  // AI decision support (requirements AI-*): real calculations for the classical functions, sample output for the models
+  ai: {
+    status: () => after(80, async () => mockAi.status()),
+    models: () => after(120, async () => mockAi.models()),
+    downloadModel: (modelId) => after(100, async () => mockAi.downloadModel(modelId)),
+    jobs: () => after(60, async () => mockAi.jobs()),
+    rules: () => after(80, async () => mockAi.rules()),
+    vocabulary: () => after(80, async () => mockAi.vocabulary()),
+    drawingCohort: (drawingId, scope, ageMin, ageMax) => after(250, async () => mockAi.drawingCohort(drawingId, scope, ageMin, ageMax)),
+    drawingGroups: (drawingId) => after(250, async () => mockAi.drawingGroups(drawingId)),
+    drawingIndicators: (drawingId, scope, ageMin, ageMax) => after(200, async () => mockAi.drawingIndicators(drawingId, scope, ageMin, ageMax)),
+    sessionCohort: (sessionId) => after(300, async () => mockAi.sessionCohort(sessionId)),
+    sessionInsights: (sessionId) => after(300, async () => mockAi.sessionInsights(sessionId)),
+    heavy: (drawingId, feature) => after(60, async () => mockAi.heavy(drawingId, feature)),
+    startHeavy: (drawingId, feature, regenerate = false) => after(120, async () => mockAi.startHeavy(drawingId, feature, regenerate)),
+    discardHeavy: (drawingId, feature) => after(60, async () => mockAi.discardHeavy(drawingId, feature)),
+    cancelJob: (jobId) => after(60, async () => mockAi.cancelJob(jobId)),
+    viewImage: (drawingId, view, groupId) => after(100, async () => mockAi.viewImage(drawingId, view, groupId)),
   },
 
   // Questionnaires, messages and the admin dashboard (requirements FBK-*, ADM-*)

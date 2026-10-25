@@ -23,7 +23,7 @@ function YawChart({ shares, label }: { shares: number[]; label: string }) {
       <circle cx={centre} cy={centre} r={centre - 4} fill="#f8fafc" stroke="#e2e8f0" />
       {shares.map((share, i) => (
         <path key={i} d={wedge(i)} fill="#0072b2" fillOpacity="0.7" stroke="#fff" strokeWidth="1">
-          <title>{`${i * 30}°–${(i + 1) * 30}°: ${formatNumber(share * 100, 0)} %`}</title>
+          <title>{`${i * 30}°-${(i + 1) * 30}°: ${formatNumber(share * 100, 0)} %`}</title>
         </path>
       ))}
     </svg>
@@ -42,7 +42,7 @@ function PlayerBlock({ player, name }: { player: TrackedPlayer; name: string }) 
   if (player.explored) {
     rows.push(
       [t('tracking.exploredArea'), `${formatNumber(player.explored.areaM2, 2)} m²`],
-      [t('tracking.headHeight'), `${formatNumber(player.explored.headHeightMin, 2)}–${formatNumber(player.explored.headHeightMax, 2)} m`],
+      [t('tracking.headHeight'), `${formatNumber(player.explored.headHeightMin, 2)}-${formatNumber(player.explored.headHeightMax, 2)} m`],
     )
   }
   const direction = player.headDirection

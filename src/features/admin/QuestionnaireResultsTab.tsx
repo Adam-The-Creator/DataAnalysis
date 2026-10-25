@@ -161,12 +161,12 @@ function SusSection({ stats, target }: { stats: SusStats; target: FeedbackTarget
         <StatTile label={t('admin.results.mean')} value={formatNumber(stats.mean, 1)} />
         <StatTile label={t('admin.results.sd')} value={formatNumber(stats.sd, 1)} />
         <StatTile label={t('admin.results.median')} value={formatNumber(stats.median, 1)} />
-        <StatTile label={t('admin.results.range')} value={`${formatNumber(stats.min, 1)} – ${formatNumber(stats.max, 1)}`} />
+        <StatTile label={t('admin.results.range')} value={`${formatNumber(stats.min, 1)} - ${formatNumber(stats.max, 1)}`} />
       </div>
       <p className="text-xs text-slate-500">{t('admin.results.susReference')}</p>
       <div>
         <Heading title={t('admin.results.histogram')} />
-        <BarList ariaLabel={t('admin.results.histogram')} data={stats.histogram.map((b) => ({ label: `${b.from} – ${b.to}`, value: b.count }))} />
+        <BarList ariaLabel={t('admin.results.histogram')} data={stats.histogram.map((b) => ({ label: `${b.from} - ${b.to}`, value: b.count }))} />
       </div>
       <div>
         <Heading title={t('admin.results.susItems')} hint={t('admin.results.susItemsHint')} />
@@ -208,7 +208,7 @@ function UeqSection({ stats }: { stats: UeqStats }) {
   )
 }
 
-const uePair = (t: TFunction, id: UeqItemId) => `${t(`instruments.ueq.items.${id}.left`)} – ${t(`instruments.ueq.items.${id}.right`)}`
+const uePair = (t: TFunction, id: UeqItemId) => `${t(`instruments.ueq.items.${id}.left`)} - ${t(`instruments.ueq.items.${id}.right`)}`
 
 function SmileySection({ stats }: { stats: SmileyStats }) {
   const { t } = useTranslation()

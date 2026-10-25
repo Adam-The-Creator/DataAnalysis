@@ -11,7 +11,7 @@ import { cn } from '@/lib/cn'
 
 interface NavItem {
   to: string
-  key: 'dashboard' | 'sessions' | 'participants' | 'compare' | 'reports' | 'roadmap' | 'myRecords' | 'feedback' | 'adminUsage' | 'adminFeedback'
+  key: 'dashboard' | 'sessions' | 'participants' | 'compare' | 'reports' | 'ai' | 'roadmap' | 'myRecords' | 'myProfile' | 'feedback' | 'adminUsage' | 'adminFeedback'
   end?: boolean
   phase?: Phase // shown for screens that are only a placeholder so far
 }
@@ -22,12 +22,14 @@ const psychologistNav: NavItem[] = [
   { to: '/participants', key: 'participants' },
   { to: '/compare', key: 'compare' },
   { to: '/reports', key: 'reports' },
+  { to: '/ai', key: 'ai' },
   { to: '/feedback', key: 'feedback' },
   { to: '/roadmap', key: 'roadmap' },
 ]
 
 const playerNav: NavItem[] = [
-  { to: '/my', key: 'myRecords' },
+  { to: '/my', key: 'myRecords', end: true },
+  { to: '/my/profile', key: 'myProfile' },
   { to: '/feedback', key: 'feedback' },
 ]
 

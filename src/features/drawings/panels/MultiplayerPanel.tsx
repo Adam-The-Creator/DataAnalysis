@@ -32,7 +32,7 @@ function TurnStrip({ data, nameOf }: { data: MultiplayerData; nameOf: (id: strin
         const index = authors.indexOf(block.playerId)
         return (
           <rect key={n} x={x(block.startMs)} y={20 + index * row} width={Math.max(2, x(block.endMs) - x(block.startMs))} height={row - 8} rx="2" fill={authorColor(index)} fillOpacity="0.85">
-            <title>{`${nameOf(block.playerId)}: ${formatClock(block.startMs)}–${formatClock(block.endMs)}`}</title>
+            <title>{`${nameOf(block.playerId)}: ${formatClock(block.startMs)}-${formatClock(block.endMs)}`}</title>
           </rect>
         )
       })}

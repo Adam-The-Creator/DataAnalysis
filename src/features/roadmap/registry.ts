@@ -53,10 +53,17 @@ const features = [
   ['SEC-09', 'P3', 'partial'], ['SEC-10', 'P3', 'partial'], ['SEC-11', 'P3', 'partial'], ['SEC-12', 'P3', 'done'],
   ['TEC-13', 'P3', 'done'], ['TEC-14', 'P3', 'done'], ['TEC-15', 'P3', 'done'], ['TEC-16', 'P3', 'partial'],
   // P4: AI based data analysis and decision support
-  ['AI-01', 'P4', 'planned'], ['AI-02', 'P4', 'planned'], ['AI-03', 'P4', 'planned'], ['AI-04', 'P4', 'planned'],
-  ['AI-05', 'P4', 'planned'], ['AI-06', 'P4', 'planned'], ['AI-07', 'P4', 'planned'],
-  ['AI-10', 'P4', 'planned'], ['AI-11', 'P4', 'planned'], ['AI-12', 'P4', 'planned'], ['AI-13', 'P4', 'planned'],
-  ['AI-14', 'P4', 'planned'], ['AI-15', 'P4', 'planned'], ['AI-16', 'P4', 'planned'], ['AI-17', 'P4', 'planned'],
+  // The real models were run by hand on the demo drawings (CLIP on the CPU, the two Ollama models on the GPU).
+  // Partly: AI-02 (the Ollama models were only tried on the GPU, not on a CPU), AI-06 (the licences are recorded from
+  // the model cards, not yet verified against the study), AI-07 (the evaluated flag and the "not evaluated" notes exist,
+  // the trial with psychologists is still to be done: how well the models do on real drawings is unknown).
+  // Planned: AI-17 (optional, adopted only if it beats AI-12 and AI-13 on the sample set of AI-07).
+  ['AI-01', 'P4', 'done'], ['AI-02', 'P4', 'partial'], ['AI-03', 'P4', 'done'], ['AI-04', 'P4', 'done'],
+  ['AI-05', 'P4', 'done'], ['AI-06', 'P4', 'partial'], ['AI-07', 'P4', 'partial'],
+  ['AI-10', 'P4', 'done'], ['AI-11', 'P4', 'done'], ['AI-12', 'P4', 'done'], ['AI-13', 'P4', 'done'],
+  ['AI-14', 'P4', 'done'], ['AI-15', 'P4', 'done'], ['AI-16', 'P4', 'done'], ['AI-17', 'P4', 'planned'],
+  // Added after the first review of Phase 4: a player edits their own information
+  ['PLY-04', 'P4', 'done'],
 ] as const
 
 export type RequirementId = (typeof features)[number][0]

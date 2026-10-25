@@ -33,6 +33,7 @@ export type FeatureId =
   | 'export'
   | 'feedback'
   | 'admin'
+  | 'ai'
 
 /**
  * A feature that needs a part of the server that does not exist yet (mostly the analysis module, TEC-02).

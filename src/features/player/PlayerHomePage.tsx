@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { usePlayerDrawings, usePlayerInfos, useSessionsByIds } from '@/api/hooks'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, QueryBoundary } from '@/components/ui/states'
@@ -28,14 +30,14 @@ export function PlayerHomePage() {
     <>
       <PageHeader title={t('player.title')} subtitle={t('player.subtitle')} />
       <div className="space-y-6">
-        <Card title={t('player.info')}>
+        <Card title={t('player.info')} actions={<Link to="/my/profile" className={buttonClass('secondary', 'px-2 py-1 text-xs')}>{t('profile.edit')}</Link>}>
           {info ? (
             <dl className="grid gap-4 text-sm sm:grid-cols-4">
               {([
                 [t('participants.name'), displayName(info, info.id)],
-                [t('participants.age'), info.age ?? '–'],
-                [t('participants.gender'), info.gender ?? '–'],
-                [t('participants.dominantHand'), info.dominantHand ?? '–'],
+                [t('participants.age'), info.age ?? '-'],
+                [t('participants.gender'), info.gender ?? '-'],
+                [t('participants.dominantHand'), info.dominantHand ?? '-'],
               ] as const).map(([label, value]) => (
                 <div key={label}>
                   <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt>

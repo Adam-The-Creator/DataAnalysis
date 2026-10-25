@@ -1,7 +1,9 @@
 import type {
-  AdminMessage, CohortFilters, CohortResult, CreatedReport, CsvDialect, Drawing, DrawingAnalysis, DrawingGeometry,
+  AdminMessage, AiDrawingCohort, AiGroups, AiHeavyFeature, AiHeavyState, AiIndicators, AiInsights, AiJob, AiModelEntry,
+  AiOutput, AiResultTypes, AiRulesInfo, AiScope, AiSessionCohort, AiStatusInfo, AiView, AiVocabularyInfo,
+  CohortFilters, CohortResult, CreatedReport, CsvDialect, Drawing, DrawingAnalysis, DrawingGeometry,
   DrawingMeta, ExportFormat, HeatmapData, InstrumentDefinition, InstrumentId, LoginResult, MessageFilters, MessageInput,
-  MessagePage, MultiplayerData, MySubmissions, Overview, ParticipantHistory, PlayerInfo, PlayerListEntry,
+  MessagePage, MultiplayerData, MySubmissions, Overview, ParticipantHistory, PlayerInfo, PlayerInfoInput, PlayerListEntry,
   QuestionnaireInput, QuestionnaireResults, RecentDrawing, ReportInfo, ReportKind, ResultFilters, RoleValue, Session,
   SessionInput, SessionStats, SessionSummary, SubmissionReceipt, TimePoint, TimelineData, TrackingData, UsageNumbers,
 } from './types'
@@ -37,6 +39,8 @@ export interface Api {
     /** A null entry means the info could not be read (for example a player may only read their own). */
     infos(playerIds: string[]): Promise<(PlayerInfo | null)[]>
     list(): Promise<PlayerListEntry[]>
+    /** A player changes their own info (My profile). The server refuses values outside its limits with a message. */
+    updateInfo(playerId: string, input: PlayerInfoInput): Promise<void>
     drawings(playerId: string): Promise<DrawingMeta[]>
   }
 
@@ -72,6 +76,33 @@ export interface Api {
     createReport(kind: ReportKind, targetId: string, regenerate?: boolean): Promise<CreatedReport>
     reportHtml(reportId: string): Promise<string>
     deleteReport(reportId: string): Promise<void>
+  }
+
+  /**
+   * AI decision support (requirements AI-01..AI-16), psychologists only. Every output is an AiOutput: labelled as
+   * AI-generated, with model, parameters, confidence and evidence. The heavy functions (labels, description, summary)
+   * run as background jobs: start one, then follow the state until its job is done.
+   */
+  ai: {
+    status(): Promise<AiStatusInfo>
+    models(): Promise<AiModelEntry[]>
+    /** An explicit download of a listed model (AI-06). A background job. */
+    downloadModel(modelId: string): Promise<AiJob>
+    jobs(): Promise<AiJob[]>
+    rules(): Promise<AiRulesInfo>
+    vocabulary(): Promise<AiVocabularyInfo>
+    drawingCohort(drawingId: string, scope: AiScope, ageMin?: number, ageMax?: number): Promise<AiOutput<AiDrawingCohort>>
+    drawingGroups(drawingId: string): Promise<AiOutput<AiGroups>>
+    drawingIndicators(drawingId: string, scope: AiScope, ageMin?: number, ageMax?: number): Promise<AiOutput<AiIndicators>>
+    sessionCohort(sessionId: string): Promise<AiOutput<AiSessionCohort>>
+    sessionInsights(sessionId: string): Promise<AiOutput<AiInsights>>
+    heavy<F extends AiHeavyFeature>(drawingId: string, feature: F): Promise<AiHeavyState<AiResultTypes[F]>>
+    /** Starts the job unless an up to date result exists (or regenerate is set). Returns the new state. */
+    startHeavy<F extends AiHeavyFeature>(drawingId: string, feature: F, regenerate?: boolean): Promise<AiHeavyState<AiResultTypes[F]>>
+    discardHeavy(drawingId: string, feature: AiHeavyFeature): Promise<void>
+    cancelJob(jobId: string): Promise<AiJob>
+    /** The view the models are shown, as an image URL (AI-04, evidence). */
+    viewImage(drawingId: string, view: AiView, groupId?: string): Promise<string>
   }
 
   /** Questionnaires and messages of a player or psychologist (requirements FBK-01..FBK-20). */

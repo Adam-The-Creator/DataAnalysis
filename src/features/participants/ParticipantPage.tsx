@@ -167,7 +167,7 @@ function ParticipantContent({ history }: { history: ParticipantHistory }) {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {shown.map((row) => {
-                    const cell = (id: MetricId) => (row.metrics[id] != null ? formatMetricValue(metricDef(id), row.metrics[id] as number) : '–')
+                    const cell = (id: MetricId) => (row.metrics[id] != null ? formatMetricValue(metricDef(id), row.metrics[id] as number) : '-')
                     return (
                       <tr key={row.meta.id} className="hover:bg-slate-50">
                         <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatDateTime(row.date)}</td>
@@ -177,7 +177,7 @@ function ParticipantContent({ history }: { history: ParticipantHistory }) {
                         <td className="px-4 py-3 text-right tabular-nums">{cell('strokesDrawn')}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{cell('totalLength')}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{cell('activeTime')}</td>
-                        <td className="px-4 py-3 text-right tabular-nums">{row.flags.length > 0 ? <Badge tone="amber">{row.flags.length}</Badge> : '–'}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{row.flags.length > 0 ? <Badge tone="amber">{row.flags.length}</Badge> : '-'}</td>
                       </tr>
                     )
                   })}
