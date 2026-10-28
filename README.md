@@ -21,7 +21,8 @@ Other scripts: `pnpm build`, `pnpm preview`, `pnpm typecheck`, `pnpm lint`.
 
 ### Demo data or live server
 
-The login page switches between two data sources (the default comes from `.env.example`, copy it to `.env.local`):
+The login page switches between two data sources (the default of the development server comes from `.env.example`, copy
+it to `.env.local`):
 
 | Mode | What it is |
 | ---- | ---------- |
@@ -30,6 +31,25 @@ The login page switches between two data sources (the default comes from `.env.e
 
 The dev server uses port 3000 because that is the origin the DatabaseServer already allows (its `config.py`
 CORS list).
+
+### Release build: served by the DatabaseServer
+
+`pnpm build` makes the release build. It is built for the address `/app/` (`vite.config.ts`, `base`), and the
+DatabaseServer serves it there: set `WEBAPP_PATH` in its `config.py` (or the environment variable of the same name) to
+the folder of the build, and the app is at `http://<server>/app/` (a browser sent to the root of the server is passed on
+to it). The psychologists then use the app at the same address as the game, for example the public ngrok URL, without any
+installation and without CORS. The release build talks to the server it came from, so the login page shows the server
+address read only; `VITE_API_BASE_URL` only matters for `pnpm dev`. The server sends a Content-Security-Policy with the
+app (see requirement REL-01 in [requirements.md](requirements.md)). `pnpm preview` serves the build under `/app/` too,
+but without a server behind it only the demo data works.
+
+A `dist` folder built **before** the app was made for `/app/` (or by anything else that builds for `/`) asks the browser for
+`/assets/...` and `/favicon.svg`, which the server answers with 404: the page stays blank. Build again (`pnpm build`; use
+`VITE_API_MODE=live` to have the login page start on *Live server*). The server prints a warning at start-up when the
+folder it serves was not built for `/app/`.
+
+For a whole installer (server, launcher, this app, AI models) see `Tools/` in the project root: its `Build-Release.ps1`
+builds this app, and the launcher tells the server where it is.
 
 ### What the live server needs
 

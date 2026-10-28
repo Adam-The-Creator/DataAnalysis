@@ -351,6 +351,7 @@
     "demoPlayer": "Enter as player",
     "demoAdmin": "Enter as admin",
     "serverUrl": "Server URL",
+    "serverUrlFixed": "This app is served by its server and always uses it.",
     "username": "Username",
     "password": "Password",
     "login": "Log in",

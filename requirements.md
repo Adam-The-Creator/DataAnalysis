@@ -427,7 +427,8 @@ Threats and countermeasures at a glance:
   `X-Content-Type-Options: nosniff`, `frame-ancestors 'none'` (or
   `X-Frame-Options`), `Referrer-Policy` and a Content-Security-Policy for the
   app. The generated reports are self-contained HTML (REP-02) and keep their
-  own policy. CORS stays restricted to the configured origin.
+  own policy. CORS stays restricted to the configured origin. Done in the
+  DatabaseServer (`webapp.py`), see REL-01 for the policy.
 - `[REQUIREMENT]` SEC-10 (P3): Outside localhost the connection is HTTPS (tunnel or
   reverse proxy), because passwords and tokens travel over it. No secret in
   the repository or the UI (TEC-09).
@@ -622,8 +623,10 @@ Functions:
   messages. Every view has loading, empty and error states.
 - `[REQUIREMENT]` TEC-08 (MVP): The server must allow the origin of the web app
   (CORS setting, currently only localhost and port 3000), or the built app is
-  served from the same origin as the API. Decided at deployment time. This is
-  a configuration, not a database change.
+  served from the same origin as the API. Decided (REL-01): the DatabaseServer
+  serves the release build itself at `/app`; the development server on port 3000
+  keeps working through the CORS list. This is a configuration, not a database
+  change.
 - `[REQUIREMENT]` TEC-09 (MVP): No secrets in the repository or the UI. Path and
   query IDs are validated on the server.
 - `[REQUIREMENT]` TEC-10 (MVP): Desktop first, usable on a tablet. Sufficient
@@ -748,6 +751,35 @@ Functions:
   the demo drawings) and shows clearly marked *sample output* for the three model based functions; it has no isolation
   forest. `src/api/mock/fuzzyRules.json` and `aiVocabulary.json` are exported from the server's own files.
 
+## Decisions made while preparing the release
+
+- `[DECISION]` REL-01 (TEC-08, SEC-09, SEC-10): The DatabaseServer serves the release build, so the psychologists open
+  it at the address of the game's server (the ngrok URL) from any PC, without CORS and without an installation.
+  - **Address:** `/app/`. The routes of the app (`/sessions`, `/drawings/<id>`, `/admin`, `/feedback`, ...) have the same
+    names as the API's routes, so the app cannot live at the root. `vite.config.ts` builds for the base `/app/`
+    (the development server keeps `/`), the router gets that base as its `basename`.
+  - **Same origin:** the release build talks to the server it came from. Its address is its own origin and the login
+    page shows it read only (`src/api/config.ts`, `servedByServer`); `VITE_API_BASE_URL` is for development only.
+  - **Root:** a browser sent to `/` is redirected to `/app/`. The game, UrlConfigurator and the launcher (no `text/html`
+    in their `Accept` header) still get the JSON health answer there.
+  - **Files:** the server serves the folder named by `WEBAPP_PATH` (config.py or the environment variable), with
+    `index.html` for every address without a file extension; a missing file is a 404 and a path out of the folder is
+    refused. Files under `assets/` (a hash of the content in their names) are cached for good, everything else must be
+    asked for again. Only the app's files are compressed (about 1.7 MB become about 0.5 MB); the API is not touched.
+  - **Policy (SEC-09):** `default-src 'self'; script-src 'self' 'sha256-<report viewer script>'; style-src 'self'
+    'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:;
+    object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`, plus `nosniff`, `X-Frame-Options` and
+    `Referrer-Policy` that every answer of the server has. A report opens in a tab made from a blob (`openReport.ts`), and
+    such a tab inherits the policy of the app. The report's one inline script (its 3D viewer) is allowed by its hash and no
+    other inline script is; its inline styles are why `style-src` has `'unsafe-inline'` (the app itself needs none). A test
+    in the DatabaseServer fails when a report contains an inline script that the policy does not list.
+  - **Checked in a real browser** (headless Edge driven over the DevTools protocol, against the packaged server): the app
+    loads, routes and deep links work under `/app`, demo and live login, all demo pages, the 3D viewer, a report tab
+    whose script runs, and a control tab whose script was changed is blocked with the violation reported; no policy
+    violation in the app tab.
+  - **Not decided here:** gzip of the API's answers (large geometry through ngrok would profit), a one-time link to open
+    a report without a blob, and everything about the ngrok plan (see the open points).
+
 ## Roadmap
 
 | Phase | Content |
@@ -843,7 +875,10 @@ here for a later update.
 - Does `placedModels` (or anything else) carry the figure position? (FUT-09) No drawing in
   the local database has placed models yet, so this could not be checked.
 - Hardware of the server PC (CPU, GPU, RAM), which decides the AI model sizes.
-- Serve the built app from the DatabaseServer (same origin) or separately.
+- Serve the built app from the DatabaseServer (same origin) or separately: decided, same origin (REL-01). Open: how
+  much of the free ngrok plan (about 1 GB and 20,000 requests a month) the analysis traffic of several psychologists
+  uses, and how ngrok's browser warning page behaves for the first visit of a browser. Neither could be tried without
+  a live tunnel.
 - Licences of the chosen AI models.
 - Charting library: the small SVG components covered Phase 2 (trends, timeline, heatmap
   projections, polar chart). Revisit it only if Phase 3 or 4 needs more (the

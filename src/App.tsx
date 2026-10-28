@@ -30,7 +30,8 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
+        {/* The release build is served by the DatabaseServer under /app (vite.config.ts "base"); in development it is "/" */}
+        <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <Suspense fallback={<LoadingBlock />}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate } from 'react-router'
-import { getApiConfig, setApiConfig, type ApiMode } from '@/api/config'
+import { getApiConfig, servedByServer, setApiConfig, type ApiMode } from '@/api/config'
 import { useAuth } from '@/auth/authContext'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/states'
@@ -98,7 +98,15 @@ export function LoginPage() {
           <form className="mt-5 space-y-4" onSubmit={onSubmit}>
             <label className="block text-sm font-medium text-slate-700">
               {t('auth.serverUrl')}
-              <input className={input} type="url" required value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} />
+              <input
+                className={cn(input, servedByServer && 'bg-slate-50 text-slate-500')}
+                type="url"
+                required
+                readOnly={servedByServer}
+                value={baseUrl}
+                onChange={(e) => setBaseUrl(e.target.value)}
+              />
+              {servedByServer && <span className="mt-1 block text-xs font-normal text-slate-500">{t('auth.serverUrlFixed')}</span>}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               {t('auth.username')}
